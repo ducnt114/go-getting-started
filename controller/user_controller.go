@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-getting-started/dto"
 	"go-getting-started/service"
@@ -13,7 +14,10 @@ type UserController struct {
 
 func (u *UserController) GetUserByGender(ctx *gin.Context) {
 	gender := ctx.Query("gender")
-
+	val, existed := ctx.Get("key-1")
+	if existed {
+		fmt.Println("key-1 value: ", val)
+	}
 	resp := u.UserService.GetUserByGender(gender)
 
 	ctx.JSON(http.StatusOK, resp)

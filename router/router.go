@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"go-getting-started/controller"
+	"go-getting-started/middleware"
 	"go-getting-started/service"
 )
 
@@ -12,6 +13,7 @@ func InitRouter() *gin.Engine {
 	userController := &controller.UserController{
 		UserService: service.NewUserService(),
 	}
+	r.Use(middleware.ResponseTime())
 
 	r.GET("/ping", pingController.Ping)
 
