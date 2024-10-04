@@ -1,0 +1,40 @@
+definitions:
+  dto.UserResponse:
+    properties:
+      age:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    required:
+    - id
+    type: object
+info:
+  contact: {}
+paths:
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: get user by gender
+      parameters:
+      - description: valid-value
+        in: header
+        name: header-1
+        required: true
+        type: string
+      - description: gender description
+        in: query
+        name: gender
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+      summary: get user by gender
+swagger: "2.0"

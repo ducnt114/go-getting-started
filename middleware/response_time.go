@@ -13,8 +13,11 @@ func ResponseTime() gin.HandlerFunc {
 		startTime := time.Now().UnixMilli()
 		fmt.Println("start time: ", startTime)
 		fmt.Println("url:", ctx.Request.URL.String())
-		ctx.Set("key-1", "value1")
+
 		header1Val := ctx.Request.Header.Get("header-1")
+		// check rate-limit
+		//
+
 		if header1Val != "valid-value" {
 			ctx.AbortWithStatus(http.StatusForbidden)
 			return
