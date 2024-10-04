@@ -22,7 +22,7 @@ func InitRouter() *gin.Engine {
 	}
 	nrApp, err := newrelic.NewApplication(
 		newrelic.ConfigAppName("go-getting-started-api"),
-		newrelic.ConfigLicense("5f86f1d81002b9f3695899e421a58fe0FFFFNRAL"),
+		newrelic.ConfigLicense(""),
 		newrelic.ConfigDistributedTracerEnabled(false),
 		newrelic.ConfigAppLogForwardingEnabled(true),
 	)
