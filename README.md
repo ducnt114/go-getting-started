@@ -49,7 +49,7 @@ Lôi hay gặp khi dùng for loop: update biến value sẽ không update giá t
 ```go  
 a := []string{"a", "b", "c"}  
 for index, value := range a {  
-value = value + "_update_value"  
+    value = value + "_update_value"
     fmt.Println(index, value)  
 }    
 fmt.Println(a)
@@ -80,4 +80,69 @@ fmt.Println(a)
 2 c
 2 c_update_value
 [a_update_value b_update_value c_update_value]
+```
+
+### switch-case
+
+```go
+    var input string
+	switch input {
+	case "value1":
+		println("value1")
+	case "value2":
+		println("value2")
+	default:
+		println("default")
+	}
+```
+
+### routine
+
+Tạo routine bằng cách thêm từ khóa `go` trước hàm cần chạy
+
+```go
+func printHello() {
+	fmt.Println("hello")
+}
+
+func main() {
+	go printHello() // go routine
+	time.Sleep(1*time.Second)
+}
+```
+
+#### WaitGroup
+
+khi cần chờ routine chạy xong thì dùng `sync.WaitGroup`
+
+```go
+func task1(wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("start task 1")
+	time.Sleep(1 * time.Second)
+	fmt.Println("end task 1")
+}
+
+func task2(wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("start task 2")
+	time.Sleep(2 * time.Second)
+	fmt.Println("end task 2")
+}
+
+func task3(wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("start task 3")
+	time.Sleep(3 * time.Second)
+	fmt.Println("end task 3")
+}
+
+func main() {
+	wg := &sync.WaitGroup{}
+	wg.Add(3)
+	go task1(wg)
+	go task2(wg)
+	go task3(wg)
+	wg.Wait()
+}
 ```
