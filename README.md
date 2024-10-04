@@ -85,16 +85,18 @@ fmt.Println(a)
 ### switch-case
 
 ```go
-    var input string
-	switch input {
+var input string
+switch input {
 	case "value1":
 		println("value1")
 	case "value2":
 		println("value2")
 	default:
 		println("default")
-	}
+}
 ```
+
+Lưu ý: không cần `break` ở các case, input match case nào sẽ chỉ chạy code trong case đó, không match thì chạy ở phần `default`
 
 ### routine
 
@@ -144,5 +146,50 @@ func main() {
 	go task2(wg)
 	go task3(wg)
 	wg.Wait()
+}
+```
+
+#### Worker pool
+
+Dùng pattern này khi cần xử lý nhiều công việc cùng lúc, mà muốn kiểm soát số lượng go-routine tạo ra để tránh mất kiểm soát,
+thay vì tạo 1 routine cho 1 việc thì fix số lượng routine rồi dùng channel để điều phối công việc vào các routine
+
+```go
+type worker struct {
+	id int
+	c  chan int
+}
+
+func (w *worker) process() {
+	for {
+		data, ok := <-w.c
+		if ok {
+			println("worker ", w.id, " processing data ", data)
+		} else {
+			// channel closed
+			fmt.Println("Worker ", w.id, " exiting")
+			return
+		}
+	}
+}
+
+func main() {
+	c := make(chan int)
+
+	w1 := &worker{id: 1, c: c}
+	w2 := &worker{id: 2, c: c}
+	w3 := &worker{id: 3, c: c}
+
+	go w1.process()
+	go w2.process()
+	go w3.process()
+
+	for i := 0; i < 10; i++ {
+		c <- i
+		time.Sleep(1 * time.Second)
+	}
+
+	close(c)
+	time.Sleep(1 * time.Second)
 }
 ```
