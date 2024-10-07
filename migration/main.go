@@ -6,9 +6,13 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/samber/do"
+	"go-getting-started/conf"
 	"go.uber.org/zap"
 )
+
+func init() {
+	conf.InitConfig()
+}
 
 func main() {
 	err := startMigrateDB()
@@ -18,19 +22,17 @@ func main() {
 }
 
 func startMigrateDB() error {
-	di := do.New()
-	defer func() {
-		_ = di.Shutdown()
-	}()
+	err := conf.InitConfig()
+	if err != nil {
+		panic(err)
+	}
 
-	config.Inject(di)
-	cf := do.MustInvoke[*config.Config](di)
 	databaseURL := fmt.Sprintf("mysql://%v:%v@tcp(%v:%v)/%v",
-		cf.MySQL.User, cf.MySQL.Password,
-		cf.MySQL.Host, cf.MySQL.Port,
-		cf.MySQL.DB,
+		conf.GlobalConfig.MySQL.User, conf.GlobalConfig.MySQL.Password,
+		conf.GlobalConfig.MySQL.Host, conf.GlobalConfig.MySQL.Port,
+		conf.GlobalConfig.MySQL.DB,
 	)
-	m, err := migrate.New(fmt.Sprintf("file://%v", cf.MySQL.MigrationFolder), databaseURL)
+	m, err := migrate.New(fmt.Sprintf("file://%v", conf.GlobalConfig.MySQL.MigrationFolder), databaseURL)
 	if err != nil {
 		return err
 	}
