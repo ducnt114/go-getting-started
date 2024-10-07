@@ -6,3 +6,7 @@ type Book struct {
 	UserID uint   `gorm:"column:user_id"`
 	User   *User
 }
+
+func (Book) TableName() string {
+	return "book"
+}

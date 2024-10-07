@@ -1,9 +1,15 @@
 package main
 
-import "go-getting-started/router"
+import (
+	"go-getting-started/conf"
+	"go-getting-started/router"
+)
 
 func init() {
-
+	err := conf.InitConfig()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {

@@ -44,7 +44,7 @@ func (c *UserController) Create(ctx *gin.Context) {
 	userID := ctx.Param("id")
 	uid, _ := strconv.ParseInt(userID, 10, 64)
 	ctx.JSON(http.StatusOK, &dto.User{
-		ID:   uid,
+		ID:   uint(uid),
 		Name: "duc",
 		Age:  32,
 	})
@@ -63,7 +63,7 @@ func (c *UserController) Delete(ctx *gin.Context) {
 	userID := ctx.Param("id")
 	uid, _ := strconv.ParseInt(userID, 10, 64)
 	ctx.JSON(http.StatusOK, &dto.User{
-		ID:   uid,
+		ID:   uint(uid),
 		Name: "duc",
 		Age:  32,
 	})
