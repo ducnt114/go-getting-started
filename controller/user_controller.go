@@ -3,11 +3,13 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"go-getting-started/dto"
+	"go-getting-started/service"
 	"net/http"
 	"strconv"
 )
 
 type UserController struct {
+	UserService service.UserService
 }
 
 // GetUserById get user by id
@@ -22,11 +24,11 @@ type UserController struct {
 func (c *UserController) GetUserById(ctx *gin.Context) {
 	userID := ctx.Param("id")
 	uid, _ := strconv.ParseInt(userID, 10, 64)
-	ctx.JSON(http.StatusOK, &dto.User{
-		ID:   uid,
-		Name: "duc",
-		Age:  32,
-	})
+	resp, err := c.UserService.GetUserById(ctx, uint(uid))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	ctx.JSON(http.StatusOK, resp)
 }
 
 // Create user
