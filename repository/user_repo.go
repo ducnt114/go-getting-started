@@ -8,6 +8,7 @@ import (
 
 type UserRepository interface {
 	FindByID(ctx context.Context, id uint) (*model.User, error)
+	Create(ctx context.Context, u *model.User) error
 }
 
 type userRepo struct {
@@ -25,4 +26,8 @@ func (r *userRepo) FindByID(ctx context.Context, id uint) (*model.User, error) {
 		Where("id = ?", id).
 		First(&user).Error
 	return &user, err
+}
+
+func (r *userRepo) Create(ctx context.Context, u *model.User) error {
+	return r.db.WithContext(ctx).Create(u).Error
 }

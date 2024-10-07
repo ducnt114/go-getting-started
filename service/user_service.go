@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"go-getting-started/dto"
+	"go-getting-started/model"
 	"go-getting-started/repository"
 )
 
@@ -21,4 +22,16 @@ func (u *UserService) GetUserById(ctx context.Context, userId uint) (*dto.User, 
 		Age:  user.Age,
 	}
 	return res, nil
+}
+
+func (u *UserService) CreateUser(ctx context.Context, req *dto.User) (*dto.User, error) {
+	user := &model.User{
+		Name: req.Name,
+		Age:  req.Age,
+	}
+	err := u.UserRepo.Create(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
 }

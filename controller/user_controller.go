@@ -41,13 +41,13 @@ func (c *UserController) GetUserById(ctx *gin.Context) {
 // @Success 200 {object} dto.User
 // @Router /user [post]
 func (c *UserController) Create(ctx *gin.Context) {
-	userID := ctx.Param("id")
-	uid, _ := strconv.ParseInt(userID, 10, 64)
-	ctx.JSON(http.StatusOK, &dto.User{
-		ID:   uint(uid),
-		Name: "duc",
-		Age:  32,
-	})
+	req := &dto.User{}
+	_ = ctx.ShouldBind(req)
+	resp, err := c.UserService.CreateUser(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	ctx.JSON(http.StatusOK, resp)
 }
 
 // Delete user by id

@@ -45,9 +45,9 @@ func InitRouter() (*gin.Engine, error) {
 
 	//v1.GET("/user", userController.ListUser)
 	v1.GET("/user/:id", userController.GetUserById)
-	//v1.POST("/user", userController.CreateUser)
-	//v1.PUT("/user/:id", userController.UpdateUser)
-	//v1.DELETE("/user/:id", userController.DeleteUser)
+	v1.POST("/user", userController.Create)
+	v1.PUT("/user/:id", userController.UpdateUser)
+	v1.DELETE("/user/:id", userController.DeleteUser)
 
 	return r, nil
 }
