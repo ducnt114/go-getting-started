@@ -1,27 +1,24 @@
-package main
+package migrate
 
 import (
 	"errors"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/mysql"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/spf13/cobra"
 	"go-getting-started/conf"
 	"go.uber.org/zap"
 )
 
-func init() {
-	conf.InitConfig()
+var Cmd = &cobra.Command{
+	Use:   "migrate",
+	Short: "migrate",
+	Long:  `migrate`,
+	Run: func(cmd *cobra.Command, args []string) {
+		startMigration()
+	},
 }
 
-func main() {
-	err := startMigrateDB()
-	if err != nil {
-		panic(err)
-	}
-}
-
-func startMigrateDB() error {
+func startMigration() {
 	err := conf.InitConfig()
 	if err != nil {
 		panic(err)
@@ -34,16 +31,16 @@ func startMigrateDB() error {
 	)
 	m, err := migrate.New(fmt.Sprintf("file://%v", conf.GlobalConfig.MySQL.MigrationFolder), databaseURL)
 	if err != nil {
-		return err
+		return
 	}
 	err = m.Up()
 	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return err
+		return
 	}
 	msg := "migrate success"
 	if errors.Is(err, migrate.ErrNoChange) {
 		msg += ", but no changes"
 	}
 	zap.S().Info(msg)
-	return nil
+	return
 }

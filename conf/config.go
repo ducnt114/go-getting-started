@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -23,6 +22,5 @@ func InitConfig() error {
 	GlobalConfig = &Config{}
 	_ = godotenv.Load(".env")
 	err := envconfig.Process("", GlobalConfig)
-	fmt.Println("db name: ", GlobalConfig.MySQL.DB)
 	return err
 }

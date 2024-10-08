@@ -1,8 +1,10 @@
 package main
 
 import (
+	"go-getting-started/cmd"
 	"go-getting-started/conf"
-	"go-getting-started/router"
+	"go.uber.org/zap"
+	"os"
 )
 
 func init() {
@@ -13,9 +15,7 @@ func init() {
 }
 
 func main() {
-	r, err := router.InitRouter()
-	if err != nil {
-		panic(err)
-	}
-	_ = r.Run(":8080")
+	pid := os.Getpid()
+	zap.S().Infof("Process ID: %v", pid)
+	cmd.Execute()
 }
