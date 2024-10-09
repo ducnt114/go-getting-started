@@ -33,9 +33,7 @@ func InitRouter() (*gin.Engine, error) {
 	}
 
 	userRepo := repository.NewUserRepository(dbOrm)
-	userService := service.UserService{
-		UserRepo: userRepo,
-	}
+	userService := service.NewUserService(userRepo)
 
 	userController := &controller.UserController{
 		UserService: userService,

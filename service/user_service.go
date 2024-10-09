@@ -7,12 +7,23 @@ import (
 	"go-getting-started/repository"
 )
 
-type UserService struct {
-	UserRepo repository.UserRepository
+type UserService interface {
+	GetUserById(ctx context.Context, userId uint) (*dto.User, error)
+	CreateUser(ctx context.Context, req *dto.User) (*dto.User, error)
 }
 
-func (u *UserService) GetUserById(ctx context.Context, userId uint) (*dto.User, error) {
-	user, err := u.UserRepo.FindByID(ctx, userId)
+type userServiceImpl struct {
+	userRepo repository.UserRepository
+}
+
+func NewUserService(userRepo repository.UserRepository) UserService {
+	return &userServiceImpl{
+		userRepo: userRepo,
+	}
+}
+
+func (u *userServiceImpl) GetUserById(ctx context.Context, userId uint) (*dto.User, error) {
+	user, err := u.userRepo.FindByID(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -24,12 +35,12 @@ func (u *UserService) GetUserById(ctx context.Context, userId uint) (*dto.User, 
 	return res, nil
 }
 
-func (u *UserService) CreateUser(ctx context.Context, req *dto.User) (*dto.User, error) {
+func (u *userServiceImpl) CreateUser(ctx context.Context, req *dto.User) (*dto.User, error) {
 	user := &model.User{
 		Name: req.Name,
 		Age:  req.Age,
 	}
-	err := u.UserRepo.Create(ctx, user)
+	err := u.userRepo.Create(ctx, user)
 	if err != nil {
 		return nil, err
 	}
