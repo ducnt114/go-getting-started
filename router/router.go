@@ -8,6 +8,7 @@ import (
 	"go-getting-started/conf"
 	"go-getting-started/controller"
 	_ "go-getting-started/docs"
+	"go-getting-started/middlewares"
 	"go-getting-started/model"
 	"go-getting-started/repository"
 	"go-getting-started/service"
@@ -19,7 +20,9 @@ import (
 
 func InitRouter() (*gin.Engine, error) {
 	gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
+	r := gin.New()
+	r.Use(middlewares.GenRequestId())
+	r.Use(middlewares.GinZap())
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

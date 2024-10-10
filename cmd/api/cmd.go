@@ -1,8 +1,9 @@
 package api
 
 import (
-	"fmt"
+	"context"
 	"github.com/spf13/cobra"
+	"go-getting-started/log"
 	"go-getting-started/router"
 )
 
@@ -20,6 +21,6 @@ func startApi() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("start api server at :8080")
+	log.Infow(context.Background(), "start api server at :8080")
 	_ = r.Run(":8080")
 }

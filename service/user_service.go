@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"go-getting-started/dto"
+	"go-getting-started/log"
 	"go-getting-started/model"
 	"go-getting-started/repository"
 )
@@ -27,6 +28,7 @@ func (u *userServiceImpl) GetUserById(ctx context.Context, userId uint) (*dto.Us
 	if err != nil {
 		return nil, err
 	}
+	log.Infow(ctx, "get user by id", "user", user.Name)
 	res := &dto.User{
 		ID:   user.ID,
 		Name: user.Name,
