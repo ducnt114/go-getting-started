@@ -26,4 +26,4 @@ WORKDIR /root/
 COPY --from=builder /app/main .
 
 # Command to run the executable
-CMD ["./main", "kafka-consumer"]
+CMD ["./main", "api"]

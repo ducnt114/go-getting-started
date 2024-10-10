@@ -2,7 +2,6 @@
 version: '3.1'
 
 services:
-
   db:
     image: mysql
     restart: always
@@ -11,3 +10,20 @@ services:
       MYSQL_DATABASE: go-getting-started
     ports:
       - 3306:3306
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    command:
+      - ./main
+      - api
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASSWORD: example
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_DBNAME: go-getting-started
