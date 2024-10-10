@@ -1,0 +1,15 @@
+name: Unit test
+
+on: pull_request
+
+jobs:
+  build-binary:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: update mod
+        run: go mod tidy
+
+      - name: test
+        run: go test ./...
