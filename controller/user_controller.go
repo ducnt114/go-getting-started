@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"go-getting-started/dto"
 	"go-getting-started/service"
@@ -24,9 +26,34 @@ type UserController struct {
 func (c *UserController) GetUserById(ctx *gin.Context) {
 	userID := ctx.Param("id")
 	uid, _ := strconv.ParseInt(userID, 10, 64)
-	resp, err := c.UserService.GetUserById(ctx, uint(uid))
+	sentryCxt := ctx.Request.Context()
+	hub := sentry.GetHubFromContext(ctx)
+	if hub == nil {
+		// Check the concurrency guide for more details: https://docs.sentry.io/platforms/go/concurrency/
+		hub = sentry.CurrentHub().Clone()
+		sentryCxt = sentry.SetHubOnContext(ctx, hub)
+	}
+	options := []sentry.SpanOption{
+		// Set the OP based on values from https://develop.sentry.dev/sdk/performance/span-operations/
+		sentry.WithOpName("http.server"),
+		sentry.ContinueFromRequest(ctx.Request),
+		sentry.WithTransactionSource(sentry.SourceURL),
+	}
+
+	transaction := sentry.StartTransaction(sentryCxt,
+		fmt.Sprintf("%s %s", ctx.Request.Method, ctx.Request.URL.Path),
+		options...,
+	)
+	defer transaction.Finish()
+
+	//span := sentry.StartSpan(ctx, "UserController.GetUserById")
+	//span.Description = "GetUserById_controller"
+	//defer span.Finish()
+
+	resp, err := c.UserService.GetUserById(sentryCxt, uint(uid))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 	ctx.JSON(http.StatusOK, resp)
 }

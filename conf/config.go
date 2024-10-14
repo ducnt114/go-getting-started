@@ -14,6 +14,9 @@ type Config struct {
 		DB              string `envconfig:"MYSQL_DBNAME"`
 		MigrationFolder string `envconfig:"MYSQL_MIGRATION_FOLDER"`
 	}
+	Sentry struct {
+		Dsn string `envconfig:"SENTRY_DSN"`
+	}
 }
 
 var GlobalConfig *Config

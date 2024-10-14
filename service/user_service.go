@@ -2,10 +2,14 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"github.com/getsentry/sentry-go"
 	"go-getting-started/dto"
 	"go-getting-started/log"
 	"go-getting-started/model"
 	"go-getting-started/repository"
+	"gorm.io/gorm"
 )
 
 type UserService interface {
@@ -24,11 +28,19 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 }
 
 func (u *userServiceImpl) GetUserById(ctx context.Context, userId uint) (*dto.User, error) {
-	user, err := u.userRepo.FindByID(ctx, userId)
+	span := sentry.StartSpan(ctx, "userServiceImpl.GetUserById")
+	span.Description = "GetUserById_service"
+	defer span.Finish()
+
+	user, err := u.userRepo.FindByID(span.Context(), userId)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("user not found with id: %d", userId)
+		}
 		return nil, err
 	}
 	log.Infow(ctx, "get user by id", "user", user.Name)
+	//time.Sleep(2 * time.Second)
 	res := &dto.User{
 		ID:   user.ID,
 		Name: user.Name,
