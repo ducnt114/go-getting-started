@@ -10,11 +10,13 @@ import (
 	"go-getting-started/model"
 	"go-getting-started/repository"
 	"gorm.io/gorm"
+	"net/http"
 )
 
 type UserService interface {
 	GetUserById(ctx context.Context, userId uint) (*dto.User, error)
 	CreateUser(ctx context.Context, req *dto.User) (*dto.User, error)
+	PasswordLogin(ctx context.Context, username, password string) (*dto.PasswordLoginResponse, error)
 }
 
 type userServiceImpl struct {
@@ -59,4 +61,18 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req *dto.User) (*dto.U
 		return nil, err
 	}
 	return req, nil
+}
+
+func (u *userServiceImpl) PasswordLogin(
+	ctx context.Context,
+	username, password string,
+) (*dto.PasswordLoginResponse, error) {
+	return &dto.PasswordLoginResponse{
+		Meta: &dto.Meta{
+			Code:    http.StatusOK,
+			Message: "success",
+		},
+		AccessToken: "sdfasdf",
+	}, nil
+	//return nil, nil // TODO
 }
