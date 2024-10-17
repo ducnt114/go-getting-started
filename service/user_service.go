@@ -56,6 +56,7 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req *dto.User) (*dto.U
 		Name: req.Name,
 		Age:  req.Age,
 	}
+	// validate password
 	err := u.userRepo.Create(ctx, user)
 	if err != nil {
 		return nil, err
@@ -67,12 +68,18 @@ func (u *userServiceImpl) PasswordLogin(
 	ctx context.Context,
 	username, password string,
 ) (*dto.PasswordLoginResponse, error) {
+
+	user, err := u.userRepo.FindByName(ctx, username)
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+	if user.Pass != password {
+		return nil, errors.New("invalid user/pass")
+	}
 	return &dto.PasswordLoginResponse{
 		Meta: &dto.Meta{
 			Code:    http.StatusOK,
-			Message: "success",
+			Message: user.Name,
 		},
-		AccessToken: "sdfasdf",
 	}, nil
-	//return nil, nil // TODO
 }

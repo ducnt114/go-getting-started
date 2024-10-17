@@ -12,6 +12,7 @@ import (
 type UserRepository interface {
 	FindByID(ctx context.Context, id uint) (*model.User, error)
 	Create(ctx context.Context, u *model.User) error
+	FindByName(ctx context.Context, username string) (*model.User, error)
 }
 
 type userRepo struct {
@@ -65,4 +66,8 @@ func printStack() {
 			break
 		}
 	}
+}
+
+func (r *userRepo) FindByName(ctx context.Context, username string) (*model.User, error) {
+	return nil, nil // TODO
 }
