@@ -7,6 +7,7 @@ import (
 	"go-getting-started/dto"
 	mockRepo "go-getting-started/mock/go-getting-started/repository"
 	"go-getting-started/model"
+	"gorm.io/gorm"
 	"net/http"
 	"testing"
 )
@@ -49,6 +50,16 @@ func TestPasswordLogin(t *testing.T) {
 
 func TestCreateUser(t *testing.T) {
 	mockUserRepo := &mockRepo.MockUserRepository{}
+
+	mockUserRepo.
+		On("FindByName", mock.Anything, "user-existed").
+		Return(&model.User{Name: "user-existed", Pass: "pass-1"}, nil)
+	mockUserRepo.
+		On("FindByName", mock.Anything, "user-not-existed").
+		Return(nil, gorm.ErrRecordNotFound)
+	mockUserRepo.
+		On("FindByName", mock.Anything, "user-valid").
+		Return(&model.User{Name: "user-valid", Pass: "pass-1"}, nil)
 
 	userService := &userServiceImpl{
 		userRepo: mockUserRepo,

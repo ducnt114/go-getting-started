@@ -52,11 +52,16 @@ func (u *userServiceImpl) GetUserById(ctx context.Context, userId uint) (*dto.Us
 }
 
 func (u *userServiceImpl) CreateUser(ctx context.Context, req *dto.User) (*dto.User, error) {
+	existedUser, _ := u.userRepo.FindByName(ctx, req.Name)
+	if existedUser != nil && existedUser.Name != "" {
+		return nil, errors.New("user existed")
+	}
 	user := &model.User{
 		Name: req.Name,
 		Age:  req.Age,
 	}
 	// validate password
+	// ....
 	err := u.userRepo.Create(ctx, user)
 	if err != nil {
 		return nil, err

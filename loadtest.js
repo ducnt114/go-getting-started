@@ -3,8 +3,13 @@ import { check, sleep } from 'k6';
 
 // Define options for the load test
 export let options = {
-  vus: 5, // Virtual Users
-  duration: '1m', // Test duration
+//  vus: 5, // Virtual Users
+//  duration: '20s', // Test duration
+  stages: [
+      { duration: '10s', target: 5 }, // ramp up to 400 users
+      { duration: '30s', target: 100 }, // stay at 400 for ~4 hours
+      { duration: '10s', target: 5 }, // scale down. (optional)
+    ],
 };
 
 // Define the API endpoint you want to test

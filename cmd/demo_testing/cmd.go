@@ -1,6 +1,10 @@
 package demo_testing
 
-import "strings"
+import (
+	"encoding/json"
+	gjson "github.com/goccy/go-json"
+	"strings"
+)
 
 // ConcatWithPlus concatenates strings using the + operator
 func ConcatWithPlus(strs []string) string {
@@ -18,4 +22,12 @@ func ConcatWithBuilder(strs []string) string {
 		builder.WriteString(s)
 	}
 	return builder.String()
+}
+
+func JsonUnmarshall(input []byte, out interface{}) {
+	_ = json.Unmarshal(input, &out)
+}
+
+func JsonUnmarshallWithLib(input []byte, out interface{}) {
+	_ = gjson.Unmarshal(input, &out)
 }
