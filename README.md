@@ -18,3 +18,9 @@ go run main.go migrate
 ```bash
 make migration name=<input-name>
 ```
+
+## Install mockery
+
+```bash
+go install github.com/vektra/mockery/v2@latest
+```

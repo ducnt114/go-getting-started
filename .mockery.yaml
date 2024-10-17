@@ -1,0 +1,10 @@
+quiet: False
+disable-version-string: True
+with-expecter: True
+mockname: "Mock{{.InterfaceName}}"
+filename: "{{.MockName}}.go"
+dir: "mock/{{.PackagePath}}"
+outpkg: "{{.PackageName}}"
+all: True
+packages:
+  go-getting-started/repository:
