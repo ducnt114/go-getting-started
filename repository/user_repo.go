@@ -4,6 +4,8 @@ import (
 	"context"
 	"go-getting-started/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"time"
 )
 
 type UserRepository interface {
@@ -13,6 +15,7 @@ type UserRepository interface {
 	FindByName(ctx context.Context, username string) (*model.User, error)
 
 	CreateUserWithBook(ctx context.Context, u *model.User) error
+	UpdateUserAgeDemo(ctx context.Context, userID uint) (*model.User, error)
 }
 
 type userRepo struct {
@@ -93,4 +96,21 @@ func (r *userRepo) List(ctx context.Context, name string) ([]*model.User, error)
 		return nil, err
 	}
 	return users, err
+}
+
+func (r *userRepo) UpdateUserAgeDemo(ctx context.Context, userID uint) (*model.User, error) {
+	user := &model.User{}
+	db := r.db.WithContext(ctx)
+	// Fetch the product and lock the row for update
+	if err := db.Clauses(clause.Locking{Strength: "UPDATE"}).
+		First(user, userID).Error; err != nil {
+		return nil, err
+	}
+
+	time.Sleep(10 * time.Second)
+
+	// Update the stock
+	user.Age += 10
+	err := db.Save(user).Error
+	return user, err
 }

@@ -14,6 +14,7 @@ import (
 type UserService interface {
 	GetUserById(ctx context.Context, userId uint) (*dto.User, error)
 	List(ctx context.Context, name string) (*dto.ListUserResponse, error)
+	Update(ctx context.Context, id uint) (*dto.User, error)
 	CreateUser(ctx context.Context, req *dto.CreateUserReq) (*dto.User, error)
 	PasswordLogin(ctx context.Context, username, password string) (*dto.PasswordLoginResponse, error)
 }
@@ -127,4 +128,12 @@ func (s *userServiceImpl) convertToUserDto(user *model.User) *dto.User {
 		res.Tag1 = user.Tags[0].Val
 	}
 	return res
+}
+
+func (s *userServiceImpl) Update(ctx context.Context, id uint) (*dto.User, error) {
+	u, err := s.userRepo.UpdateUserAgeDemo(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return s.convertToUserDto(u), nil
 }

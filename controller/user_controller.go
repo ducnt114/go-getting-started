@@ -81,3 +81,15 @@ func (c *UserController) List(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+
+func (c *UserController) Update(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+
+	resp, err := c.UserService.Update(ctx, uint(id))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
