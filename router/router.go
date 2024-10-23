@@ -9,7 +9,6 @@ import (
 	"go-getting-started/controller"
 	_ "go-getting-started/docs"
 	"go-getting-started/middlewares"
-	"go-getting-started/model"
 	"go-getting-started/repository"
 	"go-getting-started/service"
 	"gorm.io/driver/mysql"
@@ -30,10 +29,10 @@ func InitRouter() (*gin.Engine, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = dbOrm.AutoMigrate(&model.User{}, &model.Book{})
-	if err != nil {
-		return nil, err
-	}
+	//err = dbOrm.AutoMigrate(&model.User{}, &model.Book{})
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	userRepo := repository.NewUserRepository(dbOrm)
 	userService := service.NewUserService(userRepo)

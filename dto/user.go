@@ -6,12 +6,14 @@ type User struct {
 	Age   int     `json:"age"`
 	Bio   string  `json:"bio"`
 	Books []*Book `json:"books"`
+	Tag1  string  `json:"tag_1"`
 }
 
 type CreateUserReq struct {
-	Name     string `json:"name"`
-	Age      int    `json:"age"`
-	Password string `json:"password"`
+	Name     string  `json:"name"`
+	Age      int     `json:"age"`
+	Password string  `json:"password"`
+	Books    []*Book `json:"books"`
 }
 
 type PasswordLoginResponse struct {

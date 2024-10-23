@@ -11,6 +11,8 @@ type UserRepository interface {
 	List(ctx context.Context, name string) ([]*model.User, error)
 	Create(ctx context.Context, u *model.User) error
 	FindByName(ctx context.Context, username string) (*model.User, error)
+
+	CreateUserWithBook(ctx context.Context, u *model.User) error
 }
 
 type userRepo struct {
@@ -38,6 +40,40 @@ func (r *userRepo) FindByID(ctx context.Context, id uint) (*model.User, error) {
 
 func (r *userRepo) Create(ctx context.Context, u *model.User) error {
 	return r.db.WithContext(ctx).Create(u).Error
+}
+
+//func (r *userRepo) CreateUserWithBook(ctx context.Context, u *model.User) error {
+//	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+//		if err := tx.Create(u).Error; err != nil {
+//			return err // Rollback on error
+//		}
+//		// Insert book
+//		for _, book := range u.Books {
+//			if err := tx.Create(&book).Error; err != nil {
+//				return err // Rollback on error
+//			}
+//		}
+//		// Commit transaction if all operations succeed
+//		return nil
+//	})
+//}
+
+func (r *userRepo) CreateUserWithBook(ctx context.Context, u *model.User) error {
+	tx := r.db.WithContext(ctx).Begin()
+	if err := tx.Create(u).Error; err != nil {
+		tx.Rollback() // Rollback on error
+		return err
+	}
+	tx.SavePoint("sp1")
+	// Insert book
+	for _, book := range u.Books {
+		if err := tx.Create(&book).Error; err != nil {
+			tx.RollbackTo("sp1")
+			break
+		}
+	}
+	tx.Commit() // Commit the transaction if all operations succeed
+	return nil
 }
 
 func (r *userRepo) FindByName(ctx context.Context, username string) (*model.User, error) {

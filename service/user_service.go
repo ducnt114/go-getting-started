@@ -48,19 +48,24 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, req *dto.CreateUserReq
 	user := &model.User{
 		Name: req.Name,
 		Age:  req.Age,
+		Pass: req.Password,
 	}
-	// validate password
-	// ....
-	err := s.userRepo.Create(ctx, user)
-	if err != nil {
-		return nil, err
+	for _, b := range req.Books {
+		user.Books = append(user.Books, &model.Book{
+			Name:  b.Name,
+			Title: b.Title,
+		})
 	}
-	userRes := &dto.User{
-		ID:   user.ID,
-		Name: user.Name,
-		Age:  user.Age,
-		Bio:  "",
+	if len(user.Books) > 0 {
+		if err := s.userRepo.CreateUserWithBook(ctx, user); err != nil {
+			return nil, err
+		}
+	} else {
+		if err := s.userRepo.Create(ctx, user); err != nil {
+			return nil, err
+		}
 	}
+	userRes := s.convertToUserDto(user)
 	return userRes, nil
 }
 
@@ -117,6 +122,9 @@ func (s *userServiceImpl) convertToUserDto(user *model.User) *dto.User {
 			Name:  b.Name,
 			Title: b.Title,
 		})
+	}
+	if user.Tags != nil && len(user.Tags) > 0 {
+		res.Tag1 = user.Tags[0].Val
 	}
 	return res
 }
