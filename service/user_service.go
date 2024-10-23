@@ -4,9 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/getsentry/sentry-go"
 	"go-getting-started/dto"
-	"go-getting-started/log"
 	"go-getting-started/model"
 	"go-getting-started/repository"
 	"gorm.io/gorm"
@@ -15,7 +13,8 @@ import (
 
 type UserService interface {
 	GetUserById(ctx context.Context, userId uint) (*dto.User, error)
-	CreateUser(ctx context.Context, req *dto.User) (*dto.User, error)
+	List(ctx context.Context, name string) (*dto.ListUserResponse, error)
+	CreateUser(ctx context.Context, req *dto.CreateUserReq) (*dto.User, error)
 	PasswordLogin(ctx context.Context, username, password string) (*dto.PasswordLoginResponse, error)
 }
 
@@ -29,30 +28,20 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 	}
 }
 
-func (u *userServiceImpl) GetUserById(ctx context.Context, userId uint) (*dto.User, error) {
-	span := sentry.StartSpan(ctx, "userServiceImpl.GetUserById")
-	span.Description = "GetUserById_service"
-	defer span.Finish()
-
-	user, err := u.userRepo.FindByID(span.Context(), userId)
+func (s *userServiceImpl) GetUserById(ctx context.Context, userId uint) (*dto.User, error) {
+	user, err := s.userRepo.FindByID(ctx, userId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("user not found with id: %d", userId)
 		}
 		return nil, err
 	}
-	log.Infow(ctx, "get user by id", "user", user.Name)
-	//time.Sleep(2 * time.Second)
-	res := &dto.User{
-		ID:   user.ID,
-		Name: user.Name,
-		Age:  user.Age,
-	}
+	res := s.convertToUserDto(user)
 	return res, nil
 }
 
-func (u *userServiceImpl) CreateUser(ctx context.Context, req *dto.User) (*dto.User, error) {
-	existedUser, _ := u.userRepo.FindByName(ctx, req.Name)
+func (s *userServiceImpl) CreateUser(ctx context.Context, req *dto.CreateUserReq) (*dto.User, error) {
+	existedUser, _ := s.userRepo.FindByName(ctx, req.Name)
 	if existedUser != nil && existedUser.Name != "" {
 		return nil, errors.New("user existed")
 	}
@@ -62,19 +51,25 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req *dto.User) (*dto.U
 	}
 	// validate password
 	// ....
-	err := u.userRepo.Create(ctx, user)
+	err := s.userRepo.Create(ctx, user)
 	if err != nil {
 		return nil, err
 	}
-	return req, nil
+	userRes := &dto.User{
+		ID:   user.ID,
+		Name: user.Name,
+		Age:  user.Age,
+		Bio:  "",
+	}
+	return userRes, nil
 }
 
-func (u *userServiceImpl) PasswordLogin(
+func (s *userServiceImpl) PasswordLogin(
 	ctx context.Context,
 	username, password string,
 ) (*dto.PasswordLoginResponse, error) {
 
-	user, err := u.userRepo.FindByName(ctx, username)
+	user, err := s.userRepo.FindByName(ctx, username)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
@@ -87,4 +82,41 @@ func (u *userServiceImpl) PasswordLogin(
 			Message: user.Name,
 		},
 	}, nil
+}
+
+func (s *userServiceImpl) List(ctx context.Context, name string) (*dto.ListUserResponse, error) {
+	users, err := s.userRepo.List(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	listUser := make([]*dto.User, 0)
+	for _, u := range users {
+		listUser = append(listUser, s.convertToUserDto(u))
+	}
+	res := &dto.ListUserResponse{
+		Meta: &dto.Meta{
+			Code:    http.StatusOK,
+			Message: "ok",
+		},
+		Data: listUser,
+	}
+	return res, nil
+}
+
+func (s *userServiceImpl) convertToUserDto(user *model.User) *dto.User {
+	res := &dto.User{
+		ID:   user.ID,
+		Name: user.Name,
+		Age:  user.Age,
+	}
+	if user.Profile != nil {
+		res.Bio = user.Profile.Bio
+	}
+	for _, b := range user.Books {
+		res.Books = append(res.Books, &dto.Book{
+			Name:  b.Name,
+			Title: b.Title,
+		})
+	}
+	return res
 }

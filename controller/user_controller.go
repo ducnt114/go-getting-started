@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"go-getting-started/dto"
 	"go-getting-started/service"
@@ -26,31 +24,8 @@ type UserController struct {
 func (c *UserController) GetUserById(ctx *gin.Context) {
 	userID := ctx.Param("id")
 	uid, _ := strconv.ParseInt(userID, 10, 64)
-	sentryCxt := ctx.Request.Context()
-	hub := sentry.GetHubFromContext(ctx)
-	if hub == nil {
-		// Check the concurrency guide for more details: https://docs.sentry.io/platforms/go/concurrency/
-		hub = sentry.CurrentHub().Clone()
-		sentryCxt = sentry.SetHubOnContext(ctx, hub)
-	}
-	options := []sentry.SpanOption{
-		// Set the OP based on values from https://develop.sentry.dev/sdk/performance/span-operations/
-		sentry.WithOpName("http.server"),
-		sentry.ContinueFromRequest(ctx.Request),
-		sentry.WithTransactionSource(sentry.SourceURL),
-	}
 
-	transaction := sentry.StartTransaction(sentryCxt,
-		fmt.Sprintf("%s %s", ctx.Request.Method, ctx.Request.URL.Path),
-		options...,
-	)
-	defer transaction.Finish()
-
-	//span := sentry.StartSpan(ctx, "UserController.GetUserById")
-	//span.Description = "GetUserById_controller"
-	//defer span.Finish()
-
-	resp, err := c.UserService.GetUserById(sentryCxt, uint(uid))
+	resp, err := c.UserService.GetUserById(ctx, uint(uid))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -68,7 +43,7 @@ func (c *UserController) GetUserById(ctx *gin.Context) {
 // @Success 200 {object} dto.User
 // @Router /user [post]
 func (c *UserController) Create(ctx *gin.Context) {
-	req := &dto.User{}
+	req := &dto.CreateUserReq{}
 	_ = ctx.ShouldBind(req)
 	resp, err := c.UserService.CreateUser(ctx, req)
 	if err != nil {
@@ -94,4 +69,15 @@ func (c *UserController) Delete(ctx *gin.Context) {
 		Name: "duc",
 		Age:  32,
 	})
+}
+
+func (c *UserController) List(ctx *gin.Context) {
+	name := ctx.Query("name")
+
+	resp, err := c.UserService.List(ctx, name)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
 }

@@ -44,7 +44,7 @@ func InitRouter() (*gin.Engine, error) {
 
 	v1 := r.Group("/api/v1")
 
-	//v1.GET("/user", userController.ListUser)
+	v1.GET("/user", userController.List)
 	v1.GET("/user/:id", userController.GetUserById)
 	v1.POST("/user", userController.Create)
 	//v1.PUT("/user/:id", userController.UpdateUser)
@@ -60,7 +60,7 @@ func initDbConnection() (*gorm.DB, error) {
 		conf.GlobalConfig.MySQL.DB,
 	)
 	dbOrm, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Error),
+		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
 		return nil, err
