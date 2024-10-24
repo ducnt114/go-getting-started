@@ -100,10 +100,12 @@ func (r *userRepo) List(ctx context.Context, name string) ([]*model.User, error)
 
 func (r *userRepo) UpdateUserAgeDemo(ctx context.Context, userID uint) (*model.User, error) {
 	user := &model.User{}
-	db := r.db.WithContext(ctx)
+	tx := r.db.WithContext(ctx).Begin()
+
 	// Fetch the product and lock the row for update
-	if err := db.Clauses(clause.Locking{Strength: "UPDATE"}).
+	if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
 		First(user, userID).Error; err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
@@ -111,6 +113,11 @@ func (r *userRepo) UpdateUserAgeDemo(ctx context.Context, userID uint) (*model.U
 
 	// Update the stock
 	user.Age += 10
-	err := db.Save(user).Error
+	err := tx.Save(user).Error
+	if err != nil {
+		tx.Rollback()
+	} else {
+		tx.Commit()
+	}
 	return user, err
 }
