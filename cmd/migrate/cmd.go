@@ -1,11 +1,15 @@
 package migrate
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/spf13/cobra"
 	"go-getting-started/conf"
+	"go-getting-started/log"
 	"go.uber.org/zap"
 )
 
@@ -31,10 +35,12 @@ func startMigration() {
 	)
 	m, err := migrate.New(fmt.Sprintf("file://%v", conf.GlobalConfig.MySQL.MigrationFolder), databaseURL)
 	if err != nil {
+		log.Errorw(context.Background(), "failed to create migration instance", "error", err)
 		return
 	}
 	err = m.Up()
 	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		log.Errorw(context.Background(), "failed to migrate", "error", err)
 		return
 	}
 	msg := "migrate success"
