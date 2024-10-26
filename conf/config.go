@@ -22,6 +22,10 @@ type Config struct {
 	Sentry struct {
 		Dsn string `envconfig:"SENTRY_DSN"`
 	}
+
+	JWT struct {
+		PublicKeyFilePath string `envconfig:"JWT_PUBLIC_KEY_FILE_PATH"`
+	}
 }
 
 func NewConfig(di *do.Injector) (*Config, error) {

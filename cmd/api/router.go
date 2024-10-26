@@ -17,6 +17,7 @@ func InitRouter(di *do.Injector) (*gin.Engine, error) {
 	r := gin.New()
 	r.Use(middlewares.GenRequestId())
 	r.Use(middlewares.GinZap())
+	r.Use(middlewares.Auth(di))
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
