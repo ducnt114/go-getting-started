@@ -12,6 +12,7 @@ type UserRepository interface {
 	FindByID(ctx context.Context, id uint) (*model.User, error)
 	List(ctx context.Context, name string) ([]*model.User, error)
 	Create(ctx context.Context, u *model.User) error
+	Update(ctx context.Context, u *model.User) error
 	BatchCreate(ctx context.Context, users []*model.User) error
 	FindByName(ctx context.Context, username string) (*model.User, error)
 
@@ -31,8 +32,8 @@ func (r *userRepo) FindByID(ctx context.Context, id uint) (*model.User, error) {
 	var user model.User
 	err := r.db.WithContext(ctx).
 		Model(&model.User{}).
-		Select("name", "age").
-		Omit("pass").
+		//Select("name", "age").
+		//Omit("pass").
 		Where("id = ?", id).
 		Preload("Profile").
 		Preload("Books").
@@ -46,6 +47,10 @@ func (r *userRepo) FindByID(ctx context.Context, id uint) (*model.User, error) {
 
 func (r *userRepo) Create(ctx context.Context, u *model.User) error {
 	return r.db.WithContext(ctx).Create(u).Error
+}
+
+func (r *userRepo) Update(ctx context.Context, u *model.User) error {
+	return r.db.WithContext(ctx).Save(u).Error
 }
 
 func (r *userRepo) BatchCreate(ctx context.Context, users []*model.User) error {

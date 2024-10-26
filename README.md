@@ -24,3 +24,15 @@ make migration name=<input-name>
 ```bash
 go install github.com/vektra/mockery/v2@latest
 ```
+
+## Swagger
+
+```bash
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+
+Generate swagger docs
+
+```bash
+swag init
+```

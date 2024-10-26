@@ -66,21 +66,21 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	// user existed
-	_, err := userService.CreateUser(context.Background(), &dto.User{Name: "user-existed"})
+	_, err := userService.CreateUser(context.Background(), &dto.CreateUserReq{Name: "user-existed"})
 	if err == nil {
 		t.Fail()
 	}
 
 	// password length < 10
 	_, err = userService.CreateUser(context.Background(),
-		&dto.User{Name: "user-not-existed", Password: "123456789"})
+		&dto.CreateUserReq{Name: "user-not-existed", Password: "123456789"})
 	if err == nil {
 		t.Fail()
 	}
 
 	// valid
 	resp, err := userService.CreateUser(context.Background(),
-		&dto.User{Name: "user-valid", Password: "1234567891011"})
+		&dto.CreateUserReq{Name: "user-valid", Password: "1234567891011"})
 	if err != nil {
 		t.Fail()
 	}

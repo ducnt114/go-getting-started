@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/samber/do"
 	"github.com/spf13/cobra"
 	"go-getting-started/log"
 	"go-getting-started/router"
@@ -17,6 +18,10 @@ var Cmd = &cobra.Command{
 }
 
 func startApi() {
+	injector := do.New()
+
+	defer injector.Shutdown()
+
 	r, err := router.InitRouter()
 	if err != nil {
 		panic(err)
