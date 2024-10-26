@@ -3,9 +3,14 @@ package conf
 import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/samber/do"
 )
 
 type Config struct {
+	ApiService struct {
+		Port int64 `envconfig:"API_PORT"`
+	}
+
 	MySQL struct {
 		Host            string `envconfig:"MYSQL_HOST"`
 		Port            int64  `envconfig:"MYSQL_PORT"`
@@ -19,11 +24,9 @@ type Config struct {
 	}
 }
 
-var GlobalConfig *Config
-
-func InitConfig() error {
-	GlobalConfig = &Config{}
+func NewConfig(di *do.Injector) (*Config, error) {
+	envConfig := &Config{}
 	_ = godotenv.Load(".env")
-	err := envconfig.Process("", GlobalConfig)
-	return err
+	err := envconfig.Process("", envConfig)
+	return envConfig, err
 }

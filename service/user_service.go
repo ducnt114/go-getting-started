@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/samber/do"
 	"go-getting-started/dto"
 	"go-getting-started/model"
 	"go-getting-started/repository"
@@ -23,10 +24,10 @@ type userServiceImpl struct {
 	userRepo repository.UserRepository
 }
 
-func NewUserService(userRepo repository.UserRepository) UserService {
+func NewUserService(di *do.Injector) (UserService, error) {
 	return &userServiceImpl{
-		userRepo: userRepo,
-	}
+		userRepo: do.MustInvoke[repository.UserRepository](di),
+	}, nil
 }
 
 func (s *userServiceImpl) GetUserById(ctx context.Context, userId uint) (*dto.User, error) {

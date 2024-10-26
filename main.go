@@ -2,16 +2,11 @@ package main
 
 import (
 	"go-getting-started/cmd"
-	"go-getting-started/conf"
 	"go.uber.org/zap"
 	"os"
 )
 
 func init() {
-	err := conf.InitConfig()
-	if err != nil {
-		panic(err)
-	}
 }
 
 func main() {

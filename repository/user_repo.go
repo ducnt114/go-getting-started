@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/samber/do"
 	"go-getting-started/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -24,8 +25,9 @@ type userRepo struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) UserRepository {
-	return &userRepo{db: db}
+func NewUserRepository(di *do.Injector) (UserRepository, error) {
+	db := do.MustInvoke[*gorm.DB](di)
+	return &userRepo{db: db}, nil
 }
 
 func (r *userRepo) FindByID(ctx context.Context, id uint) (*model.User, error) {

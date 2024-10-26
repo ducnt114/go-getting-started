@@ -2,14 +2,29 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/samber/do"
 	"go-getting-started/dto"
 	"go-getting-started/service"
 	"net/http"
 	"strconv"
 )
 
-type UserController struct {
-	UserService service.UserService
+type UserController interface {
+	GetUserById(ctx *gin.Context)
+	Create(ctx *gin.Context)
+	Delete(ctx *gin.Context)
+	List(ctx *gin.Context)
+	Update(ctx *gin.Context)
+}
+
+type userCtl struct {
+	userService service.UserService
+}
+
+func NewUserController(di *do.Injector) UserController {
+	return &userCtl{
+		userService: do.MustInvoke[service.UserService](di),
+	}
 }
 
 // GetUserById get user by id
@@ -21,11 +36,11 @@ type UserController struct {
 // @Param id path int true "user id"
 // @Success 200 {object} dto.User
 // @Router /user/:id [get]
-func (c *UserController) GetUserById(ctx *gin.Context) {
+func (c *userCtl) GetUserById(ctx *gin.Context) {
 	userID := ctx.Param("id")
 	uid, _ := strconv.ParseInt(userID, 10, 64)
 
-	resp, err := c.UserService.GetUserById(ctx, uint(uid))
+	resp, err := c.userService.GetUserById(ctx, uint(uid))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -42,10 +57,10 @@ func (c *UserController) GetUserById(ctx *gin.Context) {
 // @Param user body dto.User true "user info"
 // @Success 200 {object} dto.User
 // @Router /user [post]
-func (c *UserController) Create(ctx *gin.Context) {
+func (c *userCtl) Create(ctx *gin.Context) {
 	req := &dto.CreateUserReq{}
 	_ = ctx.ShouldBind(req)
-	resp, err := c.UserService.CreateUser(ctx, req)
+	resp, err := c.userService.CreateUser(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -61,7 +76,7 @@ func (c *UserController) Create(ctx *gin.Context) {
 // @Param id path int true "user id"
 // @Success 200 {object} dto.User
 // @Router /user/:id [delete]
-func (c *UserController) Delete(ctx *gin.Context) {
+func (c *userCtl) Delete(ctx *gin.Context) {
 	userID := ctx.Param("id")
 	uid, _ := strconv.ParseInt(userID, 10, 64)
 	ctx.JSON(http.StatusOK, &dto.User{
@@ -71,10 +86,10 @@ func (c *UserController) Delete(ctx *gin.Context) {
 	})
 }
 
-func (c *UserController) List(ctx *gin.Context) {
+func (c *userCtl) List(ctx *gin.Context) {
 	name := ctx.Query("name")
 
-	resp, err := c.UserService.List(ctx, name)
+	resp, err := c.userService.List(ctx, name)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -82,11 +97,11 @@ func (c *UserController) List(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-func (c *UserController) Update(ctx *gin.Context) {
+func (c *userCtl) Update(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 
-	resp, err := c.UserService.Update(ctx, uint(id))
+	resp, err := c.userService.Update(ctx, uint(id))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
