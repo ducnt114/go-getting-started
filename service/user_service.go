@@ -24,7 +24,7 @@ type userServiceImpl struct {
 	userRepo repository.UserRepository
 }
 
-func NewUserService(di *do.Injector) (UserService, error) {
+func newUserService(di *do.Injector) (UserService, error) {
 	return &userServiceImpl{
 		userRepo: do.MustInvoke[repository.UserRepository](di),
 	}, nil

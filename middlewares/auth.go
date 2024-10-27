@@ -1,19 +1,17 @@
 package middlewares
 
 import (
-	"crypto/rsa"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/samber/do"
-	"go-getting-started/conf"
+	"go-getting-started/dto"
+	"go-getting-started/utils"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
 )
 
 var ignoreAuthEndpoint = []string{
-	`/auth/login`,
+	`/api/v1/auth/login`,
 }
 
 func ignoreAuth(c *gin.Context) bool {
@@ -26,15 +24,7 @@ func ignoreAuth(c *gin.Context) bool {
 }
 
 func Auth(di *do.Injector) gin.HandlerFunc {
-	cf := do.MustInvoke[*conf.Config](di)
-	jwtPubKey, err := os.ReadFile(cf.JWT.PublicKeyFilePath)
-	if err != nil {
-		panic(err)
-	}
-	pubKey, err := jwt.ParseRSAPublicKeyFromPEM(jwtPubKey)
-	if err != nil {
-		panic(err)
-	}
+	jwtUtil := do.MustInvoke[utils.JWTUtil](di)
 
 	return func(ctx *gin.Context) {
 		if ignoreAuth(ctx) {
@@ -57,31 +47,18 @@ func Auth(di *do.Injector) gin.HandlerFunc {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		case "Bearer":
-			claims, err := parseAccessToken(parts[1], pubKey)
+			var userClaim dto.JwtClaims
+			err := jwtUtil.ParseClaims(parts[1], &userClaim)
 			if err != nil {
 				ctx.AbortWithStatus(http.StatusUnauthorized)
 				return
 			}
-			ctx.Set("user_uuid", claims.UserUUID)
-			ctx.Set("user_name", claims.UserName)
+			ctx.Set("user_uuid", userClaim.UserUUID)
+			ctx.Set("user_name", userClaim.UserName)
 		default:
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 		ctx.Next()
 	}
-}
-
-type jwtClaims struct {
-	jwt.RegisteredClaims
-	UserUUID string `json:"user_uuid"`
-	UserName string `json:"user_name"`
-}
-
-func parseAccessToken(accessToken string, key *rsa.PublicKey) (*jwtClaims, error) {
-	claims := &jwtClaims{}
-	_, err := jwt.NewParser().ParseWithClaims(accessToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return key, nil
-	})
-	return claims, err
 }

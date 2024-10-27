@@ -25,7 +25,7 @@ type userRepo struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(di *do.Injector) (UserRepository, error) {
+func newUserRepository(di *do.Injector) (UserRepository, error) {
 	db := do.MustInvoke[*gorm.DB](di)
 	return &userRepo{db: db}, nil
 }
@@ -94,7 +94,12 @@ func (r *userRepo) CreateUserWithBook(ctx context.Context, u *model.User) error 
 }
 
 func (r *userRepo) FindByName(ctx context.Context, username string) (*model.User, error) {
-	return nil, nil // TODO
+	var user *model.User
+	err := r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Where("name = ?", username).
+		First(&user).Error
+	return user, err
 }
 
 func (r *userRepo) List(ctx context.Context, name string) ([]*model.User, error) {

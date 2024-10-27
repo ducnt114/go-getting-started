@@ -36,3 +36,13 @@ Generate swagger docs
 ```bash
 swag init
 ```
+
+## Generate JWT public and private key
+
+```bash
+# Generate a private key (private.pem) with 2048-bit RSA encryption
+openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+
+# Extract the public key (public.pem) from the private key
+openssl rsa -pubout -in private.pem -out public.pem
+```

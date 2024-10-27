@@ -17,18 +17,23 @@ func InitRouter(di *do.Injector) (*gin.Engine, error) {
 	r := gin.New()
 	r.Use(middlewares.GenRequestId())
 	r.Use(middlewares.GinZap())
-	r.Use(middlewares.Auth(di))
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	userController := controller.NewUserController(di)
+	authController := controller.NewAuthController(di)
 
 	v1 := r.Group("/api/v1")
 
-	v1.GET("/user", userController.List)
-	v1.GET("/user/:id", userController.GetUserById)
-	v1.POST("/user", userController.Create)
-	v1.PUT("/user/:id", userController.Update)
+	authGroup := v1.Group("/auth")
+	authGroup.POST("/login", authController.PasswordLogin)
+
+	userGroup := v1.Group("/user")
+	userGroup.Use(middlewares.Auth(di))
+	userGroup.GET("", userController.List)
+	userGroup.GET("/:id", userController.GetUserById)
+	userGroup.POST("", userController.Create)
+	userGroup.PUT("/:id", userController.Update)
 	//v1.DELETE("/user/:id", userController.DeleteUser)
 
 	return r, nil

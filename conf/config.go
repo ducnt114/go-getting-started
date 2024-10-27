@@ -24,7 +24,8 @@ type Config struct {
 	}
 
 	JWT struct {
-		PublicKeyFilePath string `envconfig:"JWT_PUBLIC_KEY_FILE_PATH"`
+		PublicKeyFilePath  string `envconfig:"JWT_PUBLIC_KEY_FILE_PATH"`
+		PrivateKeyFilePath string `envconfig:"JWT_PRIVATE_KEY_FILE_PATH"`
 	}
 }
 
