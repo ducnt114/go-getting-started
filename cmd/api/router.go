@@ -22,11 +22,17 @@ func InitRouter(di *do.Injector) (*gin.Engine, error) {
 
 	userController := controller.NewUserController(di)
 	authController := controller.NewAuthController(di)
+	twoFaController := controller.NewTwoFaController(di)
 
 	v1 := r.Group("/api/v1")
 
 	authGroup := v1.Group("/auth")
 	authGroup.POST("/login", authController.PasswordLogin)
+
+	twoFaGroup := v1.Group("/2fa")
+	twoFaGroup.Use(middlewares.Auth(di))
+	twoFaGroup.GET("", twoFaController.Get2Fa)
+	twoFaGroup.POST("", twoFaController.Setup2Fa)
 
 	userGroup := v1.Group("/user")
 	userGroup.Use(middlewares.Auth(di))

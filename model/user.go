@@ -13,6 +13,8 @@ type User struct {
 	Name    string   `gorm:"column:name"`
 	Age     int      `gorm:"column:age"`
 	Pass    string   `gorm:"column:pass"`
+	Salt    string   `gorm:"column:salt"`
+	TwoFA   string   `gorm:"column:2fa"`
 	Profile *Profile `gorm:"foreignKey:UserName;references:Name"`
 	Books   []*Book
 	Tags    Tags `gorm:"column:tags"`

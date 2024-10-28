@@ -3,6 +3,7 @@ module go-getting-started
 go 1.23.1
 
 require (
+	github.com/dgryski/dgoogauth v0.0.0-20190221195224-5a805980a5f3
 	github.com/gin-contrib/zap v1.1.4
 	github.com/gin-gonic/gin v1.10.0
 	github.com/goccy/go-json v0.10.3

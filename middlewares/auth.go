@@ -53,7 +53,7 @@ func Auth(di *do.Injector) gin.HandlerFunc {
 				ctx.AbortWithStatus(http.StatusUnauthorized)
 				return
 			}
-			ctx.Set("user_uuid", userClaim.UserUUID)
+			ctx.Set("user_id", userClaim.UserID)
 			ctx.Set("user_name", userClaim.UserName)
 		default:
 			ctx.AbortWithStatus(http.StatusUnauthorized)

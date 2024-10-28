@@ -46,3 +46,21 @@ openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
 # Extract the public key (public.pem) from the private key
 openssl rsa -pubout -in private.pem -out public.pem
 ```
+
+## Google authentication qr format
+
+```text
+otpauth://totp/Example:alice@google.com?secret=TTETFQGNNTNRHHSY&issuer=Example
+```
+
+use `qr` tool to generate qr code image
+
+```bash
+pip install qrcode
+```
+
+gen image
+
+```bash
+qr "otpauth://totp/Example:alice@google.com?secret=TTETFQGNNTNRHHSY&issuer=Example"
+```

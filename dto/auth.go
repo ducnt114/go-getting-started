@@ -14,11 +14,28 @@ type Token struct {
 
 type JwtClaims struct {
 	jwt.RegisteredClaims
-	UserUUID string `json:"user_uuid"`
+	UserID   uint   `json:"user_id"`
 	UserName string `json:"user_name"`
 }
 
 type PasswordLoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type GetTwoFaResponse struct {
+	Meta *Meta              `json:"meta"`
+	Data *TwoFaResponseData `json:"data"`
+}
+
+type TwoFaResponseData struct {
+	Secret string `json:"secret"`
+}
+
+type SetupTwoFaRequest struct {
+	OTP string `json:"otp"`
+}
+
+type SetupTwoFaResponse struct {
+	Meta *Meta `json:"meta"`
 }
