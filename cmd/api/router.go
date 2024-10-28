@@ -29,6 +29,11 @@ func InitRouter(di *do.Injector) (*gin.Engine, error) {
 	authGroup := v1.Group("/auth")
 	authGroup.POST("/login", authController.PasswordLogin)
 
+	authGroup.GET("/home", authController.HomePage)
+	authGroup.GET("/:provider", authController.SignInWithProvider)
+	authGroup.GET("/:provider/callback", authController.CallbackHandler)
+	authGroup.GET("/success", authController.Success)
+
 	twoFaGroup := v1.Group("/2fa")
 	twoFaGroup.Use(middlewares.Auth(di))
 	twoFaGroup.GET("", twoFaController.Get2Fa)

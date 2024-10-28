@@ -3,6 +3,8 @@ package conf
 import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/google"
 	"github.com/samber/do"
 )
 
@@ -27,11 +29,25 @@ type Config struct {
 		PublicKeyFilePath  string `envconfig:"JWT_PUBLIC_KEY_FILE_PATH"`
 		PrivateKeyFilePath string `envconfig:"JWT_PRIVATE_KEY_FILE_PATH"`
 	}
+
+	GoogleAuth struct {
+		ClientID     string `envconfig:"CLIENT_ID"`
+		ClientSecret string `envconfig:"CLIENT_SECRET"`
+		CallbackURL  string `envconfig:"CLIENT_CALLBACK_URL"`
+	}
 }
 
 func NewConfig(di *do.Injector) (*Config, error) {
-	envConfig := &Config{}
+	cf := &Config{}
 	_ = godotenv.Load(".env")
-	err := envconfig.Process("", envConfig)
-	return envConfig, err
+	err := envconfig.Process("", cf)
+
+	goth.UseProviders(
+		google.New(
+			cf.GoogleAuth.ClientID,
+			cf.GoogleAuth.ClientSecret,
+			cf.GoogleAuth.CallbackURL),
+	)
+
+	return cf, err
 }
