@@ -11,7 +11,6 @@ import (
 )
 
 func InitRouter(di *do.Injector) (*gin.Engine, error) {
-	//cf := do.MustInvoke[*conf.Config](di)
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
@@ -23,6 +22,7 @@ func InitRouter(di *do.Injector) (*gin.Engine, error) {
 	userController := controller.NewUserController(di)
 	authController := controller.NewAuthController(di)
 	twoFaController := controller.NewTwoFaController(di)
+	bookController := controller.NewBookController(di)
 
 	v1 := r.Group("/api/v1")
 
@@ -46,6 +46,11 @@ func InitRouter(di *do.Injector) (*gin.Engine, error) {
 	userGroup.POST("", userController.Create)
 	userGroup.PUT("/:id", userController.Update)
 	//v1.DELETE("/user/:id", userController.DeleteUser)
+
+	bookGroup := v1.Group("/book")
+	bookGroup.Use(middlewares.Auth(di))
+	bookGroup.Use(middlewares.Authorization(di))
+	bookGroup.GET("", bookController.List)
 
 	return r, nil
 }

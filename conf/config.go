@@ -35,6 +35,11 @@ type Config struct {
 		ClientSecret string `envconfig:"CLIENT_SECRET"`
 		CallbackURL  string `envconfig:"CLIENT_CALLBACK_URL"`
 	}
+
+	Casbin struct {
+		RBACModelPath  string `envconfig:"RBAC_MODEL_PATH"`
+		RBACPolicyPath string `envconfig:"RBAC_POLICY_PATH"`
+	}
 }
 
 func NewConfig(di *do.Injector) (*Config, error) {
