@@ -36,6 +36,7 @@ func (c *authCtl) PasswordLogin(ctx *gin.Context) {
 	resp, err := c.authService.PasswordLogin(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 	ctx.JSON(http.StatusOK, resp)
 }

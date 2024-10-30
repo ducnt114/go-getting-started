@@ -8,8 +8,13 @@ import (
 	"go-getting-started/dto"
 	"go-getting-started/model"
 	"go-getting-started/repository"
+	"go-getting-started/utils"
 	"gorm.io/gorm"
 	"net/http"
+)
+
+const (
+	saltLength = 20
 )
 
 type UserService interface {
@@ -52,20 +57,14 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, req *dto.CreateUserReq
 		Age:  req.Age,
 		Pass: req.Password,
 	}
-	for _, b := range req.Books {
-		user.Books = append(user.Books, &model.Book{
-			Name:  b.Name,
-			Title: b.Title,
-		})
-	}
-	if len(user.Books) > 0 {
-		if err := s.userRepo.CreateUserWithBook(ctx, user); err != nil {
-			return nil, err
-		}
-	} else {
-		if err := s.userRepo.Create(ctx, user); err != nil {
-			return nil, err
-		}
+
+	salt := utils.RandomStringWithLength(saltLength)
+	hashedPass := utils.HashPassword(req.Password, salt)
+	user.Pass = hashedPass
+	user.Salt = salt
+
+	if err := s.userRepo.Create(ctx, user); err != nil {
+		return nil, err
 	}
 	userRes := s.convertToUserDto(user)
 	return userRes, nil

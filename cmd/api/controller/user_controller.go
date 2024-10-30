@@ -63,6 +63,7 @@ func (c *userCtl) Create(ctx *gin.Context) {
 	resp, err := c.userService.CreateUser(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 	ctx.JSON(http.StatusOK, resp)
 }

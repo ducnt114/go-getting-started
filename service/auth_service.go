@@ -43,8 +43,8 @@ func (s *authServiceImpl) PasswordLogin(
 	if err != nil {
 		return nil, err
 	}
-	// TODO validate hashed password
-	if user.Pass != req.Password {
+	hashedPass := utils.HashPassword(req.Password, user.Salt)
+	if hashedPass != user.Pass {
 		return nil, errors.New("invalid password")
 	}
 
