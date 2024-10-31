@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"go-getting-started/cmd/api"
+	"go-getting-started/cmd/data_api"
 	"go-getting-started/cmd/demo_error"
 	"go-getting-started/cmd/kafka_consumer"
 	"go-getting-started/cmd/migrate"
@@ -14,6 +15,7 @@ func init() {
 	rootCmd.AddCommand(migrate.Cmd)
 	rootCmd.AddCommand(kafka_consumer.Cmd)
 	rootCmd.AddCommand(demo_error.Cmd)
+	rootCmd.AddCommand(data_api.Cmd)
 }
 
 var rootCmd = &cobra.Command{

@@ -51,6 +51,7 @@ func InitRouter(di *do.Injector) (*gin.Engine, error) {
 	bookGroup.Use(middlewares.Auth(di))
 	bookGroup.Use(middlewares.Authorization(di))
 	bookGroup.GET("", bookController.List)
+	bookGroup.GET("/data", bookController.GetData)
 
 	return r, nil
 }
