@@ -49,7 +49,7 @@ openssl rsa -pubout -in private.pem -out public.pem
 
 ## Google authentication qr format
 
-```text
+```bash
 otpauth://totp/Example:alice@google.com?secret=TTETFQGNNTNRHHSY&issuer=Example
 ```
 

@@ -40,7 +40,6 @@ func (r *userRepo) FindByID(ctx context.Context, id uint) (*model.User, error) {
 		Preload("Profile").
 		Preload("Books").
 		First(&user).Error
-
 	if err != nil {
 		return nil, err
 	}

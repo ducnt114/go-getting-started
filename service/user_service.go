@@ -109,6 +109,14 @@ func (s *userServiceImpl) List(ctx context.Context, name string) (*dto.ListUserR
 	return res, nil
 }
 
+func (s *userServiceImpl) Update(ctx context.Context, id uint) (*dto.User, error) {
+	u, err := s.userRepo.UpdateUserAgeDemo(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return s.convertToUserDto(u), nil
+}
+
 func (s *userServiceImpl) convertToUserDto(user *model.User) *dto.User {
 	res := &dto.User{
 		ID:   user.ID,
@@ -128,12 +136,4 @@ func (s *userServiceImpl) convertToUserDto(user *model.User) *dto.User {
 		res.Tag1 = user.Tags[0].Val
 	}
 	return res
-}
-
-func (s *userServiceImpl) Update(ctx context.Context, id uint) (*dto.User, error) {
-	u, err := s.userRepo.UpdateUserAgeDemo(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return s.convertToUserDto(u), nil
 }
