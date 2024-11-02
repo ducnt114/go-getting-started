@@ -48,8 +48,9 @@ func InitRouter(di *do.Injector) (*gin.Engine, error) {
 	//v1.DELETE("/user/:id", userController.DeleteUser)
 
 	bookGroup := v1.Group("/book")
-	bookGroup.Use(middlewares.Auth(di))
-	bookGroup.Use(middlewares.Authorization(di))
+	//bookGroup.Use(middlewares.Auth(di))
+	//bookGroup.Use(middlewares.Authz(di))
+	//bookGroup.Use(middlewares.Authorization(di))
 	bookGroup.GET("", bookController.List)
 	bookGroup.GET("/data", bookController.GetData)
 

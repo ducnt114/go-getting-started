@@ -20,7 +20,7 @@ func NewBookService(di *do.Injector) (BookService, error) {
 }
 
 func (s *bookServiceImpl) GetData(ctx context.Context) error {
-	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 11*time.Second)
 	defer cancel()
 	//if err := fetData(ctx); err != nil {
 	//	return err

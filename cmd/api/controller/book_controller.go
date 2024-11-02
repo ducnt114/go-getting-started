@@ -27,6 +27,7 @@ func (c *bookCtl) List(ctx *gin.Context) {
 }
 
 func (c *bookCtl) GetData(ctx *gin.Context) {
+
 	err := c.bookService.GetData(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
