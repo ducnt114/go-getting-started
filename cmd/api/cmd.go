@@ -2,9 +2,15 @@ package api
 
 import (
 	"context"
+	"fmt"
+	"github.com/samber/do"
 	"github.com/spf13/cobra"
+	"go-getting-started/conf"
+	"go-getting-started/connection"
 	"go-getting-started/log"
-	"go-getting-started/router"
+	"go-getting-started/repository"
+	"go-getting-started/service"
+	"go-getting-started/utils"
 )
 
 var Cmd = &cobra.Command{
@@ -17,10 +23,23 @@ var Cmd = &cobra.Command{
 }
 
 func startApi() {
-	r, err := router.InitRouter()
+	injector := do.New()
+	defer func() {
+		_ = injector.Shutdown()
+	}()
+	conf.Inject(injector)
+	utils.Inject(injector)
+	connection.Inject(injector)
+	repository.Inject(injector)
+	service.Inject(injector)
+
+	r, err := InitRouter(injector)
 	if err != nil {
 		panic(err)
 	}
-	log.Infow(context.Background(), "start api server at :8080")
-	_ = r.Run(":8080")
+
+	cf := do.MustInvoke[*conf.Config](injector)
+	addr := fmt.Sprintf(":%v", cf.ApiService.Port)
+	log.Infow(context.Background(), fmt.Sprintf("start api server at %v", addr))
+	_ = r.Run(addr)
 }
