@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        #chatContainer { width: 400px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        #chatBox { height: 300px; overflow-y: scroll; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+        #messageInput { width: 80%; padding: 10px; }
+        #sendButton { width: 18%; padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="chatContainer">
+    <h2>Chat</h2>
+    <div id="chatBox"></div>
+    <input id="messageInput" type="text" placeholder="Type a message..." autofocus>
+    <button id="sendButton">Send</button>
+</div>
+
+<script>
+    // Establish WebSocket connection
+    const socket = new WebSocket("ws://localhost:8080/ws");
+
+    const chatBox = document.getElementById("chatBox");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+
+    // Display incoming messages
+    socket.onmessage = function(event) {
+        const message = document.createElement("div");
+        message.textContent = event.data;
+        chatBox.appendChild(message);
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+    };
+
+    // Send message when button is clicked
+    sendButton.addEventListener("click", sendMessage);
+
+    // Send message when Enter key is pressed
+    messageInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        const message = messageInput.value;
+        if (message) {
+            socket.send(message); // Send message to server
+            messageInput.value = ""; // Clear input field
+        }
+    }
+
+    // Display connection status
+    socket.onopen = function() {
+        const status = document.createElement("div");
+        status.textContent = "Connected to the server";
+        status.style.color = "green";
+        chatBox.appendChild(status);
+    };
+
+    socket.onclose = function() {
+        const status = document.createElement("div");
+        status.textContent = "Disconnected from the server";
+        status.style.color = "red";
+        chatBox.appendChild(status);
+    };
+
+    socket.onerror = function(error) {
+        console.error("WebSocket Error:", error);
+    };
+</script>
+
+</body>
+</html>
