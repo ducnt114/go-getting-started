@@ -7,6 +7,7 @@ import (
 	"go-getting-started/cmd/demo_error"
 	"go-getting-started/cmd/kafka_consumer"
 	"go-getting-started/cmd/migrate"
+	"go-getting-started/cmd/sse"
 	"go-getting-started/cmd/websocket_server"
 	"os"
 )
@@ -18,6 +19,7 @@ func init() {
 	rootCmd.AddCommand(demo_error.Cmd)
 	rootCmd.AddCommand(data_api.Cmd)
 	rootCmd.AddCommand(websocket_server.Cmd)
+	rootCmd.AddCommand(sse.Cmd)
 }
 
 var rootCmd = &cobra.Command{
