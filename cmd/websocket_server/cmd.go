@@ -13,8 +13,44 @@ var Cmd = &cobra.Command{
 	Short: "websocket_server",
 	Long:  `websocket_server`,
 	Run: func(cmd *cobra.Command, args []string) {
-		startWebsocketServer()
+		//startWebsocketServer()
+		startSingleChat()
 	},
+}
+
+func startSingleChat() {
+	http.HandleFunc("/ws", handleSingleConnections)
+
+	//go handleMessages()
+
+	fmt.Println("Server started on :8080")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatalf("Server failed: %v", err)
+	}
+}
+
+func handleSingleConnections(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("Upgrade error: %v", err)
+		return
+	}
+	defer conn.Close()
+
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Printf("Read error: %v", err)
+			break
+		} else {
+			fmt.Println("receive message: ", string(message))
+		}
+		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
+			fmt.Println("Write error: ", err)
+		} else {
+			fmt.Println("send message: ", string(message))
+		}
+	}
 }
 
 func startWebsocketServer() {

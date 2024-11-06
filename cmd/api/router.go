@@ -40,11 +40,13 @@ func InitRouter(di *do.Injector) (*gin.Engine, error) {
 	twoFaGroup.POST("", twoFaController.Setup2Fa)
 
 	userGroup := v1.Group("/user")
-	userGroup.Use(middlewares.Auth(di))
+	//userGroup.Use(middlewares.Auth(di))
 	userGroup.GET("", userController.List)
 	userGroup.GET("/:id", userController.GetUserById)
 	userGroup.POST("", userController.Create)
 	userGroup.PUT("/:id", userController.Update)
+	userGroup.GET("/stream", userController.ServeSSE)
+
 	//v1.DELETE("/user/:id", userController.DeleteUser)
 
 	bookGroup := v1.Group("/book")

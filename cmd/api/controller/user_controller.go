@@ -5,8 +5,10 @@ import (
 	"github.com/samber/do"
 	"go-getting-started/dto"
 	"go-getting-started/service"
+	"io"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type UserController interface {
@@ -15,6 +17,7 @@ type UserController interface {
 	Delete(ctx *gin.Context)
 	List(ctx *gin.Context)
 	Update(ctx *gin.Context)
+	ServeSSE(ctx *gin.Context)
 }
 
 type userCtl struct {
@@ -108,4 +111,31 @@ func (c *userCtl) Update(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)
+}
+
+func (c *userCtl) ServeSSE(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "text/event-stream")
+	ctx.Writer.Header().Set("Cache-Control", "no-cache")
+	ctx.Writer.Header().Set("Connection", "keep-alive")
+	ctx.Writer.Header().Set("Transfer-Encoding", "chunked")
+	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+
+	clientChan := make(chan string)
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			clientChan <- "Hello " + strconv.Itoa(i)
+
+			time.Sleep(3 * time.Second)
+		}
+	}()
+
+	ctx.Stream(func(w io.Writer) bool {
+		// Stream message to client from message channel
+		if msg, ok := <-clientChan; ok {
+			ctx.SSEvent("message", msg)
+			return true
+		}
+		return false
+	})
 }

@@ -31,6 +31,7 @@
 
     // Display incoming messages
     socket.onmessage = function(event) {
+        console.log('receieve message: ', event.data);
         const message = document.createElement("div");
         message.textContent = event.data;
         chatBox.appendChild(message);

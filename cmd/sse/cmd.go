@@ -37,13 +37,13 @@ func startSseServer() {
 	}()
 
 	// Basic Authentication
-	authorized := router.Group("/", gin.BasicAuth(gin.Accounts{
-		"admin": "admin123", // username : admin, password : admin123
-	}))
+	//authorized := router.Group("/", gin.BasicAuth(gin.Accounts{
+	//	"admin": "admin123", // username : admin, password : admin123
+	//}))
 
 	// Authorized client can stream the event
 	// Add event-streaming headers
-	authorized.GET("/stream", HeadersMiddleware(), stream.serveHTTP(), func(c *gin.Context) {
+	router.GET("/stream", HeadersMiddleware(), stream.serveHTTP(), func(c *gin.Context) {
 		v, ok := c.Get("clientChan")
 		if !ok {
 			return
@@ -68,7 +68,7 @@ func startSseServer() {
 	_ = router.Run(":8085")
 }
 
-// It keeps a list of clients those are currently attached
+// Event It keeps a list of clients those are currently attached
 // and broadcasting events to those clients.
 type Event struct {
 	// Events are pushed to this channel by the main events-gathering routine
@@ -84,7 +84,7 @@ type Event struct {
 	TotalClients map[chan string]bool
 }
 
-// New event messages are broadcast to all registered client connection channels
+// ClientChan New event messages are broadcast to all registered client connection channels
 type ClientChan chan string
 
 // Initialize event and Start procnteessing requests

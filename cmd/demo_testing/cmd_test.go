@@ -3,6 +3,7 @@ package demo_testing
 import (
 	"context"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 )
@@ -67,4 +68,38 @@ func performTask(ctx context.Context) error {
 		// The context's Done channel will be closed when the timeout expires
 		return ctx.Err()
 	}
+}
+
+func TestPrint(t *testing.T) {
+	c := make(chan int)
+	wg := sync.WaitGroup{}
+	go func() {
+		for i := 0; i < 10; i++ {
+			c <- i
+		}
+		close(c)
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			item, ok := <-c
+			if !ok {
+				break
+			}
+			fmt.Println("routine 1: ", item)
+		}
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			item, ok := <-c
+			if !ok {
+				break
+			}
+			fmt.Println("routine 2: ", item)
+		}
+	}()
+	wg.Wait()
 }
