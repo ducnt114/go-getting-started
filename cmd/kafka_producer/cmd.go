@@ -17,6 +17,28 @@ var Cmd = &cobra.Command{
 	},
 }
 
+//type MyPartitioner struct {
+//
+//}
+//
+//func (m *MyPartitioner) Partition(
+//	message *sarama.ProducerMessage,
+//	numPartitions int32) (int32, error) {
+//	if message.Key %2 == 0 {
+//		return 0
+//	} else {
+//		return 1
+//	}
+//}
+//
+//func (m *MyPartitioner) RequiresConsistency() bool {
+//
+//}
+//
+//func customPartitioner(topic string) sarama.Partitioner {
+//	return &MyPartitioner{}
+//}
+
 func startKafkaProducer() {
 	//injector := do.New()
 	//defer func() {
@@ -31,22 +53,26 @@ func startKafkaProducer() {
 	saramaConf.Producer.Flush.Frequency = 1 * time.Second
 	saramaConf.Producer.Return.Successes = true
 	saramaConf.Producer.Return.Errors = true
+	//saramaConf.Producer.Partitioner = customPartitioner
+	saramaConf.Producer.Partitioner = sarama.NewRandomPartitioner
 
 	producer, err := sarama.NewSyncProducer(
-		[]string{}, saramaConf)
+		[]string{"103.20.96.166:9091", "103.20.96.166:9092"}, saramaConf)
 	if err != nil {
 		panic(err)
 	}
 
+	userID := "123456"
+
 	msg := &MessageExchange{
-		Event: "order_create",
-		Data:  "order_id_123456",
+		Event: "user_login",
+		Data:  "data random",
 	}
 	msgBytes, _ := json.Marshal(msg)
 
 	producerMsg := &sarama.ProducerMessage{
 		Topic:   "topic_1",
-		Key:     nil,
+		Key:     sarama.ByteEncoder([]byte(fmt.Sprintf("%v", userID))),
 		Value:   sarama.ByteEncoder(msgBytes),
 		Headers: nil,
 	}
