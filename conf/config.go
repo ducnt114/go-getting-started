@@ -39,6 +39,13 @@ type Config struct {
 		RBACModelPath  string `envconfig:"RBAC_MODEL_PATH"`
 		RBACPolicyPath string `envconfig:"RBAC_POLICY_PATH"`
 	}
+
+	RabbitMQ struct {
+		Host string `envconfig:"RABBITMQ_HOST"`
+		Port int64  `envconfig:"RABBITMQ_PORT"`
+		User string `envconfig:"RABBITMQ_USER"`
+		Pass string `envconfig:"RABBITMQ_PASSWORD"`
+	}
 }
 
 func NewConfig(di *do.Injector) (*Config, error) {

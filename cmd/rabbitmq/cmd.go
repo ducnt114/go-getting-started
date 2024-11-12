@@ -28,29 +28,14 @@ func startRabbitmqDemo() {
 	}
 	defer conn.Close()
 
-	// Step 2: Open a channel
 	ch, err := conn.Channel()
 	if err != nil {
 		log.Fatalf("Failed to open a channel: %v", err)
 	}
 	defer ch.Close()
 
-	// Step 3: Declare an exchange (type: direct)
 	exchangeName := "exch_headers"
-	//err = ch.ExchangeDeclare(
-	//	exchangeName, // exchange name
-	//	"direct",     // exchange type
-	//	true,         // durable
-	//	false,        // auto-deleted
-	//	false,        // internal
-	//	false,        // no-wait
-	//	nil,          // arguments
-	//)
-	//if err != nil {
-	//	log.Fatalf("Failed to declare an exchange: %v", err)
-	//}
 
-	// Step 4: Publish a message to the exchange
 	routingKey := ""
 	message := "Hello, RabbitMQ!"
 

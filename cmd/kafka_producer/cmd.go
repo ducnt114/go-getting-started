@@ -57,7 +57,7 @@ func startKafkaProducer() {
 	saramaConf.Producer.Partitioner = sarama.NewRandomPartitioner
 
 	producer, err := sarama.NewSyncProducer(
-		[]string{"103.20.96.166:9091", "103.20.96.166:9092"}, saramaConf)
+		[]string{"localhost:1234"}, saramaConf)
 	if err != nil {
 		panic(err)
 	}

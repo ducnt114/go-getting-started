@@ -6,7 +6,6 @@ import (
 	"github.com/IBM/sarama"
 	"github.com/spf13/cobra"
 	"log"
-	"time"
 )
 
 var Cmd = &cobra.Command{
@@ -23,6 +22,7 @@ func startKafkaConsumer() {
 	saramaConf.Version = sarama.V1_1_0_0
 	saramaConf.Consumer.Return.Errors = true
 	saramaConf.Consumer.Offsets.Initial = sarama.OffsetOldest
+	saramaConf.Consumer.Offsets.Initial = sarama.OffsetNewest
 
 	kkClient, err := sarama.NewClient(
 		[]string{}, saramaConf)
@@ -35,9 +35,6 @@ func startKafkaConsumer() {
 	if err != nil {
 		fmt.Println("consume error:", err)
 	}
-
-	fmt.Println("start kafka consumer...")
-	time.Sleep(10 * time.Second)
 }
 
 // Consumer represents a Sarama consumer group consumer
