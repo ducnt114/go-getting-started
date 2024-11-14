@@ -1,66 +1,30 @@
 # go-getting-started
 Learn Golang
 
-## Run api
-
 ```bash
-go run main.go api
+go install \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+    google.golang.org/protobuf/cmd/protoc-gen-go \
+    google.golang.org/grpc/cmd/protoc-gen-go-grpc
 ```
 
-## Run migration scripts
+if error
 
 ```bash
-go run main.go migrate
+go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest google.golang.org/protobuf/cmd/protoc-gen-go@latest google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 ```
 
-## create migration file
+
+install buf (https://github.com/bufbuild/buf):
 
 ```bash
-make migration name=<input-name>
+brew install bufbuild/buf/buf
 ```
 
-## Install mockery
+gen with buf
 
-```bash
-go install github.com/vektra/mockery/v2@latest
+```
+buf generate
 ```
 
-## Swagger
-
-```bash
-go install github.com/swaggo/swag/cmd/swag@latest
-```
-
-Generate swagger docs
-
-```bash
-swag init
-```
-
-## Generate JWT public and private key
-
-```bash
-# Generate a private key (private.pem) with 2048-bit RSA encryption
-openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
-
-# Extract the public key (public.pem) from the private key
-openssl rsa -pubout -in private.pem -out public.pem
-```
-
-## Google authentication qr format
-
-```bash
-otpauth://totp/Example:alice@google.com?secret=TTETFQGNNTNRHHSY&issuer=Example
-```
-
-use `qr` tool to generate qr code image
-
-```bash
-pip install qrcode
-```
-
-gen image
-
-```bash
-qr "otpauth://totp/Example:alice@google.com?secret=TTETFQGNNTNRHHSY&issuer=Example"
-```

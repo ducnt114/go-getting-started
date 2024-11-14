@@ -1,0 +1,35 @@
+syntax = "proto3";
+package your.service.v1;
+option go_package = "gen/go/proto";
+
+import "google/api/annotations.proto";
+
+message StringMessage {
+  string value = 1;
+}
+
+message Product {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  float price = 4;
+}
+
+message GetProductParam {
+  int64 id = 1;
+}
+
+service ProductService {
+  rpc Echo(StringMessage) returns (StringMessage) {
+    option (google.api.http) = {
+      post: "/v1/example/echo"
+      body: "*"
+    };
+  }
+
+  rpc GetProductDetail(GetProductParam) returns (Product) {
+    option (google.api.http) = {
+      get: "/v1/product/{id}"
+    };
+  }
+}
