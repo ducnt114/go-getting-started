@@ -61,6 +61,4 @@ func main() {
 		fmt.Println(reply.GetDescription())
 		fmt.Println(reply.GetPrice())
 	}
-
-	time.Sleep(5 * time.Second)
 }
