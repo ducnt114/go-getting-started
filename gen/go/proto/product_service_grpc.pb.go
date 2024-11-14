@@ -32,7 +32,7 @@ func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
 
 func (c *productServiceClient) Echo(ctx context.Context, in *StringMessage, opts ...grpc.CallOption) (*StringMessage, error) {
 	out := new(StringMessage)
-	err := c.cc.Invoke(ctx, "/your.service.v1.ProductService/Echo", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/product.service.v1.ProductService/Echo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (c *productServiceClient) Echo(ctx context.Context, in *StringMessage, opts
 
 func (c *productServiceClient) GetProductDetail(ctx context.Context, in *GetProductParam, opts ...grpc.CallOption) (*Product, error) {
 	out := new(Product)
-	err := c.cc.Invoke(ctx, "/your.service.v1.ProductService/GetProductDetail", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/product.service.v1.ProductService/GetProductDetail", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func _ProductService_Echo_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/your.service.v1.ProductService/Echo",
+		FullMethod: "/product.service.v1.ProductService/Echo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductServiceServer).Echo(ctx, req.(*StringMessage))
@@ -108,7 +108,7 @@ func _ProductService_GetProductDetail_Handler(srv interface{}, ctx context.Conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/your.service.v1.ProductService/GetProductDetail",
+		FullMethod: "/product.service.v1.ProductService/GetProductDetail",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductServiceServer).GetProductDetail(ctx, req.(*GetProductParam))
@@ -120,7 +120,7 @@ func _ProductService_GetProductDetail_Handler(srv interface{}, ctx context.Conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ProductService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "your.service.v1.ProductService",
+	ServiceName: "product.service.v1.ProductService",
 	HandlerType: (*ProductServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

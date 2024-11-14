@@ -15,6 +15,7 @@ import (
 
 var (
 	grpcProductServerEndpoint = "localhost:8081"
+	grpcPaymentServerEndpoint = "localhost:8082"
 )
 
 func run() error {
@@ -26,13 +27,14 @@ func run() error {
 	// Note: Make sure the gRPC server is running properly and accessible
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := gw.RegisterProductServiceHandlerFromEndpoint(ctx, mux, grpcProductServerEndpoint, opts)
-	if err != nil {
-		return err
-	}
+	_ = gw.RegisterProductServiceHandlerFromEndpoint(ctx, mux, grpcProductServerEndpoint, opts)
+	_ = gw.RegisterPaymentServiceHandlerFromEndpoint(ctx, mux, grpcPaymentServerEndpoint, opts)
+	//if err != nil {
+	//	return err
+	//}
 
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	log.Println("server listening at :8080")
+	log.Println("gateway listening at :8080")
 	return http.ListenAndServe(":8080", mux)
 }
 
