@@ -3,8 +3,6 @@ package conf
 import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/providers/google"
 	"github.com/samber/do"
 )
 
@@ -52,13 +50,6 @@ func NewConfig(di *do.Injector) (*Config, error) {
 	cf := &Config{}
 	_ = godotenv.Load(".env")
 	err := envconfig.Process("", cf)
-
-	goth.UseProviders(
-		google.New(
-			cf.GoogleAuth.ClientID,
-			cf.GoogleAuth.ClientSecret,
-			cf.GoogleAuth.CallbackURL),
-	)
 
 	return cf, err
 }

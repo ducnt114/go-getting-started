@@ -10,7 +10,6 @@ import (
 	"go-getting-started/log"
 	"go-getting-started/repository"
 	"go-getting-started/service"
-	"go-getting-started/utils"
 )
 
 var Cmd = &cobra.Command{
@@ -28,7 +27,6 @@ func startApi() {
 		_ = injector.Shutdown()
 	}()
 	conf.Inject(injector)
-	utils.Inject(injector)
 	connection.Inject(injector)
 	repository.Inject(injector)
 	service.Inject(injector)
