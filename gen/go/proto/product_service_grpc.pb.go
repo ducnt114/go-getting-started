@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ProductServiceClient interface {
 	Echo(ctx context.Context, in *StringMessage, opts ...grpc.CallOption) (*StringMessage, error)
 	GetProductDetail(ctx context.Context, in *GetProductParam, opts ...grpc.CallOption) (*Product, error)
+	ProductStream(ctx context.Context, opts ...grpc.CallOption) (ProductService_ProductStreamClient, error)
 }
 
 type productServiceClient struct {
@@ -48,12 +49,44 @@ func (c *productServiceClient) GetProductDetail(ctx context.Context, in *GetProd
 	return out, nil
 }
 
+func (c *productServiceClient) ProductStream(ctx context.Context, opts ...grpc.CallOption) (ProductService_ProductStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ProductService_ServiceDesc.Streams[0], "/product.service.v1.ProductService/ProductStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &productServiceProductStreamClient{stream}
+	return x, nil
+}
+
+type ProductService_ProductStreamClient interface {
+	Send(*Product) error
+	Recv() (*Product, error)
+	grpc.ClientStream
+}
+
+type productServiceProductStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *productServiceProductStreamClient) Send(m *Product) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *productServiceProductStreamClient) Recv() (*Product, error) {
+	m := new(Product)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
 type ProductServiceServer interface {
 	Echo(context.Context, *StringMessage) (*StringMessage, error)
 	GetProductDetail(context.Context, *GetProductParam) (*Product, error)
+	ProductStream(ProductService_ProductStreamServer) error
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -66,6 +99,9 @@ func (UnimplementedProductServiceServer) Echo(context.Context, *StringMessage) (
 }
 func (UnimplementedProductServiceServer) GetProductDetail(context.Context, *GetProductParam) (*Product, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProductDetail not implemented")
+}
+func (UnimplementedProductServiceServer) ProductStream(ProductService_ProductStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method ProductStream not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 
@@ -116,6 +152,32 @@ func _ProductService_GetProductDetail_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_ProductStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ProductServiceServer).ProductStream(&productServiceProductStreamServer{stream})
+}
+
+type ProductService_ProductStreamServer interface {
+	Send(*Product) error
+	Recv() (*Product, error)
+	grpc.ServerStream
+}
+
+type productServiceProductStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *productServiceProductStreamServer) Send(m *Product) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *productServiceProductStreamServer) Recv() (*Product, error) {
+	m := new(Product)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -132,6 +194,13 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ProductService_GetProductDetail_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "ProductStream",
+			Handler:       _ProductService_ProductStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "proto/product_service.proto",
 }

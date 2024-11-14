@@ -32,4 +32,11 @@ service ProductService {
       get: "/v1/product/{id}"
     };
   }
+
+  rpc ProductStream(stream Product) returns (stream Product) {
+    option (google.api.http) = {
+      post: "/v1/product/stream"
+      body: "*"
+    };
+  }
 }

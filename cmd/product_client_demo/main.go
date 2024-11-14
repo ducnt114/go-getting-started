@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	pb "go-getting-started/gen/go/proto"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"time"
 )
@@ -27,4 +29,38 @@ func main() {
 		log.Fatalf("could not greet: %v", err)
 	}
 	log.Printf("Response: %s", r.GetValue())
+
+	// test stream
+	stream, err := client.ProductStream(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	go func() {
+		for {
+			if err := stream.Send(&pb.Product{
+				Id:          time.Now().Unix(),
+				Name:        "Product Name",
+				Description: "Product Description",
+				Price:       123.4,
+			}); err != nil {
+				log.Fatal(err)
+			}
+			time.Sleep(1 * time.Second)
+		}
+	}()
+	for {
+		reply, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Fatal(err)
+		}
+		fmt.Println(reply.GetId())
+		fmt.Println(reply.GetName())
+		fmt.Println(reply.GetDescription())
+		fmt.Println(reply.GetPrice())
+	}
+
+	time.Sleep(5 * time.Second)
 }
