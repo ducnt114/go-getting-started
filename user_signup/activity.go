@@ -16,7 +16,7 @@ func SendWelcomeEmail(ctx context.Context, req UserSignupRequest) (string, error
 	if req.Email == "error@gmail.com" {
 		return "", fmt.Errorf("error when send welcome email for email: %v", req.Email)
 	}
-	
+
 	log.Printf("send welcome email for user name: %v\n\n", req.Username)
 	msg := fmt.Sprintf("SendWelcomEmail to email: %v", req.Email)
 	return msg, nil

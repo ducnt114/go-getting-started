@@ -10,7 +10,7 @@ import (
 
 func main() {
 	c, err := client.Dial(client.Options{
-		HostPort: "localhost:7233",
+		HostPort: "103.20.96.166:17233",
 	})
 	if err != nil {
 		log.Fatalln("unable to create Temporal client", err)
@@ -26,7 +26,8 @@ func main() {
 	req := user_signup.UserSignupRequest{
 		Username: "duc-test-1",
 		Password: "random-pass",
-		Email:    "error@gmail.com",
+		//Email:    "error@gmail.com",
+		Email: "valid@gmail.com",
 	}
 	we, err := c.ExecuteWorkflow(context.Background(), options, user_signup.UserSignupWorkflow, req)
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 
 func main() {
 	c, err := client.Dial(client.Options{
-		HostPort: "localhost:7233",
+		HostPort: "103.20.96.166:17233",
 	})
 	if err != nil {
 		log.Fatalln("unable to create Temporal client", err)
@@ -18,7 +18,7 @@ func main() {
 
 	// This worker_workflow hosts both Workflow and Activity functions
 	w := worker.New(c, user_signup.UserSignupTaskQueue, worker.Options{})
-	
+
 	w.RegisterWorkflow(user_signup.UserSignupWorkflow)
 
 	//w.RegisterActivity(app.ComposeGreeting)

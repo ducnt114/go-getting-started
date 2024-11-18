@@ -24,6 +24,17 @@ func UserSignupWorkflow(ctx workflow.Context, req UserSignupRequest) (string, er
 	}
 	log.Printf("saveDbResult: %v\n\n", saveDbResult)
 
+	_, err = workflow.AwaitWithTimeout(ctx, 30*time.Second, func() bool {
+		// logic to verify user email
+		if time.Now().Unix() > 1731920844 {
+			return true
+		}
+		return false
+	})
+	if err != nil {
+		return "", err
+	}
+
 	var sendEmailResult string
 	err = workflow.ExecuteActivity(ctx, SendWelcomeEmail, req).Get(ctx, &sendEmailResult)
 	if err != nil {
