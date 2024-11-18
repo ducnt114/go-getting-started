@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go-getting-started/user_signup"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/client"
 	"log"
 )
@@ -17,6 +18,16 @@ func main() {
 	}
 	defer c.Close()
 
+	resp, err := c.ListWorkflow(context.Background(),
+		&workflowservice.ListWorkflowExecutionsRequest{})
+	if err != nil {
+		log.Fatalln("unable to list workflows", err)
+		return
+	}
+	for _, ex := range resp.GetExecutions() {
+		fmt.Println("name: " + ex.Type.GetName())
+	}
+
 	options := client.StartWorkflowOptions{
 		ID:        "user-signup-workflow",
 		TaskQueue: user_signup.UserSignupTaskQueue,
@@ -26,8 +37,8 @@ func main() {
 	req := user_signup.UserSignupRequest{
 		Username: "duc-test-1",
 		Password: "random-pass",
-		//Email:    "error@gmail.com",
-		Email: "valid@gmail.com",
+		Email:    "error@gmail.com",
+		//Email: "valid@gmail.com",
 	}
 	we, err := c.ExecuteWorkflow(context.Background(), options, user_signup.UserSignupWorkflow, req)
 	if err != nil {

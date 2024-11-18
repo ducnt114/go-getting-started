@@ -51,20 +51,27 @@ func main() {
 		Age   int
 		Email string
 	}
-
-	//data := []ExampleStruct{
-	//	{"Alice", 30, "alice@example.com"},
-	//	{"Bob", 25, "bob@example.com"},
-	//	{"Charlie", 35, "charlie@example.com"},
-	//}
-	//
-	//PrintStructAttributesAndValues(data)
-	e := ExampleStruct{"Alice", 30, "test"}
-
-	val := reflect.ValueOf(e)
-	for i := 0; i < val.NumField(); i++ {
-		fmt.Println(val.Type().Field(i).Name)
-		fmt.Println(val.Field(i).Interface())
+	list := []ExampleStruct{
+		{
+			"Alice", 30, "test",
+		},
+		{
+			"Bob", 60, "bob-test",
+		},
 	}
+	ExportCsvToConsole(list)
+}
 
+func ExportCsvToConsole(arg interface{}) {
+	val := reflect.ValueOf(arg)
+	for i := 0; i < val.NumField(); i++ {
+		fmt.Print(val.Type().Field(i).Name)
+		fmt.Print(",")
+	}
+	fmt.Println()
+	for i := 0; i < val.NumField(); i++ {
+		fmt.Print(val.Field(i).Interface())
+		fmt.Print(",")
+	}
+	fmt.Println()
 }

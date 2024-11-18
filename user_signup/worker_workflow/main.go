@@ -20,6 +20,8 @@ func main() {
 	w := worker.New(c, user_signup.UserSignupTaskQueue, worker.Options{})
 
 	w.RegisterWorkflow(user_signup.UserSignupWorkflow)
+	//w.RegisterActivity(user_signup.SendWelcomeEmail)
+	//w.RegisterActivity(user_signup.SaveUserToDatabase)
 
 	//w.RegisterActivity(app.ComposeGreeting)
 
