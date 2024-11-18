@@ -64,14 +64,28 @@ func main() {
 
 func ExportCsvToConsole(arg interface{}) {
 	val := reflect.ValueOf(arg)
-	for i := 0; i < val.NumField(); i++ {
-		fmt.Print(val.Type().Field(i).Name)
-		fmt.Print(",")
+	if val.Kind() != reflect.Slice {
+		return
 	}
-	fmt.Println()
-	for i := 0; i < val.NumField(); i++ {
-		fmt.Print(val.Field(i).Interface())
-		fmt.Print(",")
+	if val.Len() == 0 {
+		return
 	}
-	fmt.Println()
+	for i := 0; i < val.Len(); i++ {
+		item := val.Index(i)
+		for i := 0; i < item.NumField(); i++ {
+			fmt.Print(item.Field(i).Interface())
+			fmt.Print(",")
+		}
+		fmt.Println()
+	}
+	//for i := 0; i < val.NumField(); i++ {
+	//	fmt.Print(val.Type().Field(i).Name)
+	//	fmt.Print(",")
+	//}
+	//fmt.Println()
+	//for i := 0; i < val.NumField(); i++ {
+	//	fmt.Print(val.Field(i).Interface())
+	//	fmt.Print(",")
+	//}
+
 }
