@@ -14,6 +14,13 @@ func main() {
 	}
 }
 
+// 1,2,3,5,8.....
 func fibonacci(n int, ch chan int) {
-	// TODO: implement fibonacci sequence, send the result to the channel
+	a := 1
+	b := 2
+	for i := 0; i < n; i++ {
+		ch <- a
+		a, b = b, a+b
+	}
+	close(ch)
 }

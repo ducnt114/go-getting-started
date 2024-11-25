@@ -1,10 +1,33 @@
 package main
 
+import "fmt"
+
 func main() {
 	chan1 := make(chan int)
 	chan2 := make(chan int)
 
 	go func() {
+		for item := range chan1 {
+
+		}
+		for {
+			item := <-chan1
+		}
+		for {
+			select {
+			case item := <-chan1:
+				fmt.Println(item)
+			case item := <-chan2:
+				fmt.Println(item)
+			}
+		}
+		switch expr {
+		case 1, 2, 3, 4:
+			
+		case 4, 5, 6:
+		default:
+		}
+
 		for i := 0; i < 10; i++ {
 			chan1 <- i
 		}

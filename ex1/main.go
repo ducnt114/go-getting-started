@@ -1,17 +1,25 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 func main() {
+	wg := &sync.WaitGroup{}
+	wg.Add(2) // = num goroutines
+	wg.Done()
 	pipe := make(chan string)
 	go func() {
 		for receiver := range pipe {
 			fmt.Println(receiver)
 		}
 	}()
-	pipe <- "water 1"
-	pipe <- "water 2"
-	pipe <- "water 3"
+	go func() {
+		for i := 0; i < 10; i++ {
+			pipe <- fmt.Sprintf("%v", i)
+		}
+	}()
 	close(pipe)
-	// TODO: wait for the goroutine to finish
+	wg.Wait()
 }

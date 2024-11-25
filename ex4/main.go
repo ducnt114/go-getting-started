@@ -2,19 +2,22 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 type Task int
 type Result int
 
 type worker struct {
-	ID int
+	ID         int
+	ch         chan Task
+	resultChan chan Result
 }
 
-func (w *worker) processWork(task Task) {
-	time.Sleep(1 * time.Second)
-	fmt.Printf("workerID: %d, task: %d done\n", w.ID, task)
+func (w *worker) processWork() {
+	t := <-w.ch
+	w.resultChan <- Result(t)
+	fmt.Printf("workerID: %d, task: %d done\n",
+		w.ID, t)
 }
 
 func main() {

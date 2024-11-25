@@ -1,10 +1,15 @@
 package main
 
+import (
+	"fmt"
+	"runtime"
+)
+
 func main() {
-	//fmt.Println("NumCPU: ", runtime.NumCPU())
-	//fmt.Println("NumGoroutine: ", runtime.NumGoroutine())
-	//lastMaxProcs := runtime.GOMAXPROCS(2)
-	//fmt.Println("lastMaxProcs: ", lastMaxProcs)
+	fmt.Println("NumCPU: ", runtime.NumCPU())
+	fmt.Println("NumGoroutine: ", runtime.NumGoroutine())
+	lastMaxProcs := runtime.GOMAXPROCS(2)
+	fmt.Println("lastMaxProcs: ", lastMaxProcs)
 	//fmt.Println("lastMaxProcs: ", runtime.LockOSThread)
 
 	//fd, err := unix.Open("./test.txt", os.O_CREATE|os.O_WRONLY, 0600)

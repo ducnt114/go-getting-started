@@ -2,18 +2,25 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
 type BankAccount struct {
-	Balance int
+	m       *sync.RWMutex
+	m2      *sync.Mutex
+	Balance int32
 }
 
-func (b *BankAccount) Deposit(amount int) {
+func (b *BankAccount) Deposit(amount int32) {
+	//atomic.AddInt32(&b.Balance, amount)
+	b.m.Lock()
+	// b.m.RLock()
 	b.Balance += amount
+	b.m.Unlock()
 }
 
-func (b *BankAccount) Withdraw(amount int) bool {
+func (b *BankAccount) Withdraw(amount int32) bool {
 	if b.Balance <= amount {
 		return false
 	}
@@ -24,6 +31,8 @@ func (b *BankAccount) Withdraw(amount int) bool {
 func main() {
 	account := BankAccount{
 		Balance: 100,
+		m:       &sync.RWMutex{},
+		m2:      &sync.Mutex{},
 	}
 
 	for i := 0; i < 50; i++ {
