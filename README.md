@@ -1,5 +1,4 @@
-# go-getting-started
-Learn Golang
+# Go training for new team member
 
 ## Run api
 
