@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go-getting-started/cmd"
-	"go-getting-started/log"
+	"go-getting-started/pkg/log"
 	"os"
 )
 
